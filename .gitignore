@@ -1,0 +1,17 @@
+__pycache__/
+*.pyc
+.coverage
+htmlcov/
+/.test-chat-*/
+/.venv/
+/chat-demo/
+
+/private-data/
+/chat-exports/
+/raw.json
+/all_keys.json
+/chat.json
+/chat.md
+.env
+.env.*
+!.env.example
