@@ -39,7 +39,12 @@ def main() -> None:
     parser.add_argument("--output-dir", required=True, type=Path, help="New folder for the two exports.")
     parser.add_argument("--self-label", action="append", default=[], help="Opt in to matching this self display name; repeatable.")
     parser.add_argument("--other-label", action="append", default=[], help="Opt in to matching this peer display name; repeatable.")
+    parser.add_argument("--include-sender-names", action="store_true", help="Keep explicitly matched display names as sender_name.")
     parser.add_argument("--utc-offset", help="Known source timezone offset, e.g. +08:00.")
+    parser.add_argument("--start-time", help="Inclusive source-local date or minute, e.g. 2026-11-07T10:30.")
+    parser.add_argument("--end-time", help="Inclusive source-local date or minute.")
+    parser.add_argument("--limit", type=int, help="Keep at most this many messages in source order after filtering.")
+    parser.add_argument("--exclude-id", action="append", default=[], help="Exclude an exact message ID; repeatable.")
     args = parser.parse_args()
     try:
         conversation = normalize_messages(
@@ -47,6 +52,11 @@ def main() -> None:
             self_labels=args.self_label,
             other_labels=args.other_label,
             utc_offset=args.utc_offset,
+            include_sender_names=args.include_sender_names,
+            start_time=args.start_time,
+            end_time=args.end_time,
+            limit=args.limit,
+            exclude_ids=args.exclude_id,
         )
         _export_pair(conversation, args.output_dir)
     except ValueError as error:
