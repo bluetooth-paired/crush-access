@@ -1,0 +1,91 @@
+{
+  "$defs": {
+    "AiConfigApplied": {
+      "description": "本次请求的 AI 配置实际生效情况（不伪造未支持的开关）。",
+      "properties": {
+        "thinking": {
+          "additionalProperties": true,
+          "description": "思考强度：requested / applied / supported / sent_parameters / note",
+          "title": "Thinking",
+          "type": "object"
+        },
+        "web_search": {
+          "anyOf": [
+            {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "联网搜索：requested / performed / results_count / query_used / note",
+          "title": "Web Search"
+        }
+      },
+      "title": "AiConfigApplied",
+      "type": "object"
+    }
+  },
+  "description": "API B 响应体。",
+  "properties": {
+    "analysis_id": {
+      "title": "Analysis Id",
+      "type": "string"
+    },
+    "session_id": {
+      "title": "Session Id",
+      "type": "string"
+    },
+    "turn": {
+      "title": "Turn",
+      "type": "integer"
+    },
+    "reply": {
+      "title": "Reply",
+      "type": "string"
+    },
+    "evidence_ids": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Evidence Ids",
+      "type": "array"
+    },
+    "evidence": {
+      "items": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "title": "Evidence",
+      "type": "array"
+    },
+    "suggestions": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Suggestions",
+      "type": "array"
+    },
+    "boundary_notes": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Boundary Notes",
+      "type": "array"
+    },
+    "ai_config": {
+      "$ref": "#/$defs/AiConfigApplied",
+      "description": "思考强度 / 联网搜索的实际生效情况"
+    }
+  },
+  "required": [
+    "analysis_id",
+    "session_id",
+    "turn",
+    "reply"
+  ],
+  "title": "AdvisorChatResponse",
+  "type": "object"
+}

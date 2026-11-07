@@ -1,0 +1,35 @@
+{
+  "additionalProperties": true,
+  "description": "单条聊天消息。sender 仅 self / other / unknown；type 允许 unknown / link_or_file 等任意字符串。",
+  "properties": {
+    "id": {
+      "title": "Id",
+      "type": "string"
+    },
+    "timestamp": {
+      "title": "Timestamp",
+      "type": "string"
+    },
+    "sender": {
+      "title": "Sender",
+      "type": "string"
+    },
+    "type": {
+      "default": "text",
+      "title": "Type",
+      "type": "string"
+    },
+    "content": {
+      "default": "",
+      "title": "Content",
+      "type": "string"
+    }
+  },
+  "required": [
+    "id",
+    "timestamp",
+    "sender"
+  ],
+  "title": "Message",
+  "type": "object"
+}

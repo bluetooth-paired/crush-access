@@ -1,0 +1,102 @@
+{
+  "$defs": {
+    "ConversationMetadata": {
+      "additionalProperties": true,
+      "properties": {
+        "total_messages": {
+          "default": 0,
+          "title": "Total Messages",
+          "type": "integer"
+        },
+        "unknown_senders": {
+          "default": 0,
+          "title": "Unknown Senders",
+          "type": "integer"
+        },
+        "anonymized": {
+          "default": false,
+          "title": "Anonymized",
+          "type": "boolean"
+        },
+        "id_origin": {
+          "default": "",
+          "title": "Id Origin",
+          "type": "string"
+        },
+        "timestamp_precision": {
+          "default": "minute",
+          "title": "Timestamp Precision",
+          "type": "string"
+        }
+      },
+      "title": "ConversationMetadata",
+      "type": "object"
+    },
+    "Message": {
+      "additionalProperties": true,
+      "description": "单条聊天消息。sender 仅 self / other / unknown；type 允许 unknown / link_or_file 等任意字符串。",
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "timestamp": {
+          "title": "Timestamp",
+          "type": "string"
+        },
+        "sender": {
+          "title": "Sender",
+          "type": "string"
+        },
+        "type": {
+          "default": "text",
+          "title": "Type",
+          "type": "string"
+        },
+        "content": {
+          "default": "",
+          "title": "Content",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "timestamp",
+        "sender"
+      ],
+      "title": "Message",
+      "type": "object"
+    }
+  },
+  "additionalProperties": true,
+  "description": "导入器产出的完整 chat.json 结构。",
+  "properties": {
+    "schema_version": {
+      "default": "1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "source": {
+      "default": "wechat-cli",
+      "title": "Source",
+      "type": "string"
+    },
+    "chat_type": {
+      "default": "private",
+      "title": "Chat Type",
+      "type": "string"
+    },
+    "messages": {
+      "items": {
+        "$ref": "#/$defs/Message"
+      },
+      "title": "Messages",
+      "type": "array"
+    },
+    "metadata": {
+      "$ref": "#/$defs/ConversationMetadata"
+    }
+  },
+  "title": "Conversation",
+  "type": "object"
+}

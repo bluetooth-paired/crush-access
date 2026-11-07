@@ -1,0 +1,84 @@
+{
+  "$defs": {
+    "AnalyzeOptions": {
+      "additionalProperties": false,
+      "description": "分析选项。",
+      "properties": {
+        "include_advice": {
+          "default": true,
+          "description": "是否生成军师建议（advisor 字段）",
+          "title": "Include Advice",
+          "type": "boolean"
+        },
+        "include_evidence": {
+          "default": true,
+          "description": "是否回传证据原文（evidence 字段）",
+          "title": "Include Evidence",
+          "type": "boolean"
+        },
+        "thinking_level": {
+          "default": "auto",
+          "description": "思考强度 auto/low/medium/high；仅在模型端点支持时生效，实际生效情况见响应 ai_config",
+          "enum": [
+            "auto",
+            "low",
+            "medium",
+            "high"
+          ],
+          "title": "Thinking Level",
+          "type": "string"
+        }
+      },
+      "title": "AnalyzeOptions",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "API A 请求体。",
+  "properties": {
+    "conversation": {
+      "additionalProperties": true,
+      "description": "墨翊 chat.json Schema 1.0",
+      "title": "Conversation",
+      "type": "object"
+    },
+    "profile": {
+      "anyOf": [
+        {
+          "additionalProperties": true,
+          "type": "object"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "可选人物档案（补充上下文，不能替代聊天证据）",
+      "title": "Profile"
+    },
+    "client_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "可选客户端标识（8-64 位字母数字_-）；不传则服务端生成并返回",
+      "examples": [
+        "auria-frontend-7f3a91"
+      ],
+      "title": "Client Id"
+    },
+    "options": {
+      "$ref": "#/$defs/AnalyzeOptions"
+    }
+  },
+  "required": [
+    "conversation"
+  ],
+  "title": "AnalyzeRequest",
+  "type": "object"
+}
