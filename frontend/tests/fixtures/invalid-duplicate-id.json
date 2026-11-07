@@ -1,0 +1,28 @@
+{
+  "schema_version": "1.0",
+  "source": "wechat-cli",
+  "chat_type": "private",
+  "messages": [
+    {
+      "id": "m001",
+      "timestamp": "2026-11-07T10:30+08:00",
+      "sender": "self",
+      "type": "text",
+      "content": "周末有空吗？"
+    },
+    {
+      "id": "m001",
+      "timestamp": "2026-11-07T10:32+08:00",
+      "sender": "other",
+      "type": "text",
+      "content": "有呀，怎么啦？"
+    }
+  ],
+  "metadata": {
+    "total_messages": 2,
+    "unknown_senders": 0,
+    "anonymized": false,
+    "id_origin": "export",
+    "timestamp_precision": "minute"
+  }
+}

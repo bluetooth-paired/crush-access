@@ -1,0 +1,14 @@
+运行命令: python tests/test_import.py
+PASS 01: 首页及原聊天导入模块保留
+PASS 02: Schema 1.0 JSON 粘贴：身份、原始时间偏移、ID、顺序及条数
+PASS 03: 更改昵称仅影响显示，不会反向推断 JSON sender
+PASS 04: 只有两条标准 JSON（self/other 各一条）仍能传入画像页面
+PASS 05: JSON 文件上传：中文/Emoji/换行/unknown/ID/时间/顺序/计数
+PASS 06: 双向画像/互动信号/军师对话：共用标准化数据并保持正常运行
+PASS 07: metadata 计数不一致：显示警告，以实际消息数组为准
+PASS 08: 非法 JSON：语法/重复 ID/错误 sender 均阻断分析且不回退成文本
+PASS 09: 非法 JSON 粘贴：即时错误提示、清空预览和消息计数
+PASS 10: 纯文本粘贴/文本文件原有分析闭环保留；.md 不列入上传格式
+PASS 11: 原 V6 带方括号时间 [HH:MM] 的纯文本格式仍可正常解析
+PASS 12: 无未捕获 JavaScript 浏览器异常
+ALL PASS: 12 groups

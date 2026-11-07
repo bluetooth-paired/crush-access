@@ -1,0 +1,4 @@
+PASS 模拟适配器成功处理分析响应，动态指数 74
+PASS analysis_id、client_id、session_id 与配置参数按后端契约透传；上下文由后端会话管理
+PASS 军师请求失败可见，点击重发可恢复
+PASS fraction 与 percent 单位明确校验

@@ -1,0 +1,78 @@
+{
+  "schema_version": "1.0",
+  "source": "wechat-cli",
+  "chat_type": "private",
+  "messages": [
+    {
+      "id": "reserved-m001",
+      "timestamp": "2026-11-07T10:03+08:00",
+      "sender": "self",
+      "sender_name": "我",
+      "type": "text",
+      "content": "最近有空吗？"
+    },
+    {
+      "id": "reserved-m002",
+      "timestamp": "2026-11-07T10:06+08:00",
+      "sender": "other",
+      "sender_name": "阿晴",
+      "type": "text",
+      "content": "这周很忙"
+    },
+    {
+      "id": "reserved-m003",
+      "timestamp": "2026-11-07T10:09+08:00",
+      "sender": "self",
+      "sender_name": "我",
+      "type": "text",
+      "content": "要不要出去玩？"
+    },
+    {
+      "id": "reserved-m004",
+      "timestamp": "2026-11-07T10:12+08:00",
+      "sender": "other",
+      "sender_name": "阿晴",
+      "type": "text",
+      "content": "暂时不方便"
+    },
+    {
+      "id": "reserved-m005",
+      "timestamp": "2026-11-07T10:15+08:00",
+      "sender": "self",
+      "sender_name": "我",
+      "type": "text",
+      "content": "下周呢？"
+    },
+    {
+      "id": "reserved-m006",
+      "timestamp": "2026-11-07T10:18+08:00",
+      "sender": "other",
+      "sender_name": "阿晴",
+      "type": "text",
+      "content": "请不要再约我了，我希望保持距离。"
+    },
+    {
+      "id": "reserved-m007",
+      "timestamp": "2026-11-07T10:21+08:00",
+      "sender": "self",
+      "sender_name": "我",
+      "type": "text",
+      "content": "知道了，我尊重你的决定。"
+    },
+    {
+      "id": "reserved-m008",
+      "timestamp": "2026-11-07T10:24+08:00",
+      "sender": "other",
+      "sender_name": "阿晴",
+      "type": "text",
+      "content": "谢谢理解"
+    }
+  ],
+  "metadata": {
+    "total_messages": 8,
+    "unknown_senders": 0,
+    "anonymized": true,
+    "id_origin": "demo",
+    "timestamp_precision": "minute"
+  }
+}

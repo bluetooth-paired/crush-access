@@ -1,0 +1,6 @@
+PASS: 无时区 Schema 1.0 导入与原文保留
+PASS: analyze 请求体、client_id、请求头及真实 metrics 映射
+PASS: null 指标显示数据不足，画像使用后端响应
+PASS: advisor 首轮与后续 session_id、多轮及配置参数契约
+PASS: 证据、建议和后端回复渲染；无浏览器异常
+NOTE: 全部使用虚构数据与模拟 HTTP 响应，不代表真实后端/模型已端到端验证。
