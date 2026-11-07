@@ -62,6 +62,7 @@
   };
   const advisorBase = (document.querySelector('meta[name="advisor-api-base"]')?.content || '').trim().replace(/\/$/,'');
   const advisor = {status:'idle',model:'',requiresAccessToken:false,token:'',includeContext:false,request:null,error:''};
+  const advisorDemo = {messages:[],input:''};
   let toastTimer;
   function toast(msg) {
     const el = $('toast'); el.textContent = msg; el.classList.add('show');
@@ -417,6 +418,7 @@
     }
   }
   function advisorStatusText(){
+    if(state.demo)return '本地规则演示 · 无需 API';
     if(advisor.status==='ready')return 'DeepSeek 配置就绪 · '+advisor.model;
     if(advisor.status==='unconfigured')return 'DeepSeek 密钥尚未在服务端配置';
     if(advisor.status==='unavailable')return 'DeepSeek 后端未连接';
@@ -438,10 +440,11 @@
   }
   function advisorPage(){
     initAdvisor();const opts=state.analysis?strategyOptions():[];
+    const messages=state.demo ? [{from:'bot',text:'这里是军师对话演示。可以点击一个示例问题，或输入问题试试。'},...advisorDemo.messages] : state.advisorMessages;
     return workWrap(`${heading('STEP 04 / 04','子乔军师，在线接招','聊聊如何回复、表达心意或自然邀约。子乔的建议以真诚和尊重为前提。',`<button class="btn btn-sm btn-white" data-action="reset-chat">${ic('rotate',14)} 重置对话</button>`)}
       <div class="v4-advisor-grid"><div class="chat-panel v4-chat-panel"><div class="chat-topbar"><div class="avatar-small avatar-photo"><img src="images/ziqiao-photo.jpeg" alt=""/></div><div><h3>吕子乔 · AI 恋爱军师</h3><p id="advisorStatus" role="status">${esc(advisorStatusText())}</p></div><span class="pill purple" style="margin-left:auto">轻松聊 · 不玩套路</span></div>
-      <div class="chat-scroll" id="chatScroll">${state.advisorMessages.map(m=>`<div class="chat-msg ${m.from==='me'?'me':'bot'}"><span class="speaker">${m.from==='me'?'🧑🏻‍💻':'👔'}</span><div class="message">${esc(m.text)}</div></div>`).join('')}</div>
-      <div class="chat-composer"><div class="quick-questions"><button data-action="ask" data-query="TA 很久没回消息，我该怎么办？">TA 很久没回？</button><button data-action="ask" data-query="我想自然地邀请 TA 见面">怎么自然邀约？</button><button data-action="ask" data-query="如何判断对方是否愿意继续聊天？">怎么看互动信号？</button></div><div class="composer-row"><input id="advisorInput" class="composer-input" placeholder="把你的恋爱难题交给子乔…" maxlength="500" value="${esc(state.advisorInput)}"/><button class="send-btn" data-action="send" aria-label="发送消息" ${advisor.request?'disabled':''}>${ic('send',19)}</button></div><p class="disclaimer">发送后，当前对话将由后端交给 DeepSeek 处理。<button type="button" class="privacy-link" data-action="check-advisor">检查连接</button></p><label id="advisorTokenField" ${advisor.requiresAccessToken?'':'hidden'}>应用访问令牌 <input id="advisorToken" type="password" autocomplete="off" value="${esc(advisor.token)}" /></label>${((state.analysis&&!state.demo)||state.profileSaved)?`<label class="check-row"><input id="advisorContext" type="checkbox" ${advisor.includeContext?'checked':''}/>附带互动统计和档案选项（不含聊天原文、昵称或自由填写内容）</label>`:''}<p id="advisorError" class="disclaimer" role="status">${esc(advisor.error || (advisor.request?'正在等待模型回复…':''))}</p></div></div>
+      <div class="chat-scroll" id="chatScroll">${messages.map(m=>`<div class="chat-msg ${m.from==='me'?'me':'bot'}"><span class="speaker">${m.from==='me'?'🧑🏻‍💻':'👔'}</span><div class="message">${esc(m.text)}</div></div>`).join('')}</div>
+      <div class="chat-composer"><div class="quick-questions"><button data-action="ask" data-query="TA 很久没回消息，我该怎么办？">TA 很久没回？</button><button data-action="ask" data-query="我想自然地邀请 TA 见面">怎么自然邀约？</button><button data-action="ask" data-query="如何判断对方是否愿意继续聊天？">怎么看互动信号？</button></div><div class="composer-row"><input id="advisorInput" class="composer-input" placeholder="把你的恋爱难题交给子乔…" maxlength="500" value="${esc(state.demo?advisorDemo.input:state.advisorInput)}"/><button class="send-btn" data-action="send" aria-label="发送消息" ${!state.demo&&advisor.request?'disabled':''}>${ic('send',19)}</button></div>${state.demo?'<p class="disclaimer">示例回复由浏览器生成。<button type="button" class="privacy-link" data-action="exit-advisor-demo">切换到真实对话</button></p>':`<p class="disclaimer">发送后，当前对话将由后端交给 DeepSeek 处理。<button type="button" class="privacy-link" data-action="check-advisor">检查连接</button></p><label id="advisorTokenField" ${advisor.requiresAccessToken?'':'hidden'}>应用访问令牌 <input id="advisorToken" type="password" autocomplete="off" value="${esc(advisor.token)}" /></label>${((state.analysis&&!state.demo)||state.profileSaved)?`<label class="check-row"><input id="advisorContext" type="checkbox" ${advisor.includeContext?'checked':''}/>附带互动统计和档案选项（不含聊天原文、昵称或自由填写内容）</label>`:''}<p id="advisorError" class="disclaimer" role="status">${esc(advisor.error || (advisor.request?'正在等待模型回复…':''))}</p>${state.analysis?'':'<button type="button" class="privacy-link" data-action="sample-advisor">查看示例</button>'}`}</div></div>
       <aside class="v4-advisor-aside"><div class="v4-advisor-head"><span>YOUR AI WINGMAN</span><h2>子乔的<br/><em>聊天锦囊</em></h2><p>“人生没有彩排，每一天都是现场直播。”</p></div><div class="panel"><div class="panel-header"><h2>给你的下一步建议</h2><span class="pill pink">${opts.length} 种表达</span></div>${opts.length?'':'<p class="helper">导入聊天并生成报告后，这里会显示基于报告的建议。</p>'}${opts.map((o,i)=>`<div class="response-card"><div class="response-head"><span class="pill ${i===0?'pink':i===1?'purple':'green'}">${esc(o.tag)}</span><span class="muted">${esc(o.tone)}</span></div><p>“${esc(o.text)}”</p><div class="response-foot"><small>${esc(o.desc)}</small><button class="btn btn-sm btn-white" data-action="copy" data-copy-index="${i}">${ic('copy',13)} 复制</button></div></div>`).join('')}</div></aside></div>
       <div class="v4-pet" aria-label="吕子乔桌宠风格形象"><img src="images/ziqiao-cutout.png" alt="吕子乔桌宠"/><span class="v4-pet-speech">有问题，尽管问我！<small>子乔 · 军师交流</small></span></div>`);
   }
@@ -472,14 +475,16 @@
     render();window.scrollTo({top:0,behavior:'auto'});
     // Hash is navigation only; do not persist any chat data.
     if(location.hash!==`#${state.view}`)history.replaceState(null,'',`#${state.view}`);
-    if(state.view==='advisor'&&advisor.status==='idle')checkAdvisorStatus();
+    if(state.view==='advisor'&&!state.demo&&advisor.status==='idle')checkAdvisorStatus();
   }
-  function loadSample() {
+  function loadSample(view='portraits') {
     state.demo=true;
     advisor.includeContext=false;
+    advisorDemo.messages=[];
+    advisorDemo.input='';
     state.messages=parsedMessages(sampleText);
     state.analysis=analyze(state.messages,'我','小林');
-    navigate('portraits');toast('正在查看虚构示例，导入页草稿已保留');
+    navigate(view);toast('正在查看虚构示例，导入页草稿已保留');
   }
   function runAnalyze() {
     const msgs=parsedMessages(state.raw);
@@ -493,8 +498,20 @@
     state.demo=false;state.messages=msgs;state.analysis=analyze(msgs);
     navigate('portraits');toast('聊天整理完成：已生成本地互动报告');
   }
+  function demoAdvisorReply(question) {
+    if(/拒绝|边界|别联系|不愿意/.test(question))return '如果对方明确表达了不愿意，就给对方空间，避免继续追问。';
+    if(/不回|没回|已读|冷淡/.test(question))return '没及时回复可能有很多原因。先给对方一点时间，避免连续追问。如果这样的交流节奏经常让你不舒服，可以找合适的时机坦诚聊聊。';
+    if(/邀|约|见面|周末/.test(question))return '可以试着给出具体、低压力的邀请，例如「周六我想去看这个展，你有兴趣一起吗？没空也没关系。」';
+    return '可以看看对方是否主动开启话题、回应你的问题，或提出下一次见面的安排。把这些当作交流线索，尊重对方明确表达的意愿。';
+  }
   async function sendAdvisor(query) {
     const q=(query??$('advisorInput')?.value??'').trim().slice(0,500);if(!q)return;
+    if(state.demo){
+      advisorDemo.messages=[...advisorDemo.messages,{from:'me',text:q},{from:'bot',text:demoAdvisorReply(q)}];
+      if(query===undefined)advisorDemo.input='';
+      render();
+      return;
+    }
     if(advisor.request)return;
     if(advisor.status!=='ready'){toast('请先配置并检查 DeepSeek 后端连接');return;}
     if(advisor.requiresAccessToken&&!advisor.token.trim()){toast('请输入后端提供的应用访问令牌');return;}
@@ -568,6 +585,11 @@
     else if(el.dataset.trait){const key=el.dataset.trait, val=el.dataset.value, arr=state.profile[key]||[];state.profile[key]=arr.includes(val)?arr.filter(x=>x!==val):[...arr,val];el.classList.toggle('active');}
     else if(el.dataset.goal){state.profile.goal=el.dataset.goal;document.querySelectorAll('[data-goal]').forEach(b=>b.classList.toggle('active',b.dataset.goal===state.profile.goal));}
     else if(act==='sample')loadSample();
+    else if(act==='sample-advisor')loadSample('advisor');
+    else if(act==='exit-advisor-demo'){
+      state.demo=false;state.analysis=null;state.messages=[];
+      navigate('advisor');
+    }
     else if(act==='privacy'){state.privacyOpen=true;render();}
     else if(act==='close-modal'){state.privacyOpen=false;render();}
     else if(act==='tab-text'){state.tab='text';render();}
@@ -579,6 +601,7 @@
     else if(act==='ask')sendAdvisor(el.dataset.query);
     else if(act==='check-advisor'&&advisor.status!=='checking')checkAdvisorStatus();
     else if(act==='reset-chat'){
+      if(state.demo){advisorDemo.messages=[];advisorDemo.input='';render();return;}
       advisor.request?.abort();advisor.request=null;advisor.error='';state.advisorInput='';
       state.advisorMessages=[];render();toast('已重置军师对话');
     }
@@ -589,7 +612,10 @@
     if(ev.target?.dataset?.profile){state.profile[ev.target.dataset.profile]=ev.target.value;return;}
     if(id==='chatInput'){state.raw=ev.target.value;state.demo=false;state.analysis=null;advisor.includeContext=false;updatePreview();}
     else if(id==='ownName'||id==='otherName'){state[id]=ev.target.value;updatePreview();}
-    else if(id==='advisorInput'){state.advisorInput=ev.target.value;}
+    else if(id==='advisorInput'){
+      if(state.demo)advisorDemo.input=ev.target.value;
+      else state.advisorInput=ev.target.value;
+    }
     else if(id==='advisorToken'){advisor.token=ev.target.value;}
   });
   document.addEventListener('change',(ev)=>{
