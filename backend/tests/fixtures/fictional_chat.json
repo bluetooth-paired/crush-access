@@ -1,0 +1,99 @@
+{
+  "schema_version": "1.0",
+  "source": "wechat-cli",
+  "chat_type": "private",
+  "messages": [
+    {
+      "id": "m001",
+      "timestamp": "2026-11-06T20:00+08:00",
+      "sender": "self",
+      "type": "text",
+      "content": "今天降温了，你那边冷不冷？"
+    },
+    {
+      "id": "m002",
+      "timestamp": "2026-11-06T20:05+08:00",
+      "sender": "other",
+      "type": "text",
+      "content": "还行，穿了外套。你注意别感冒"
+    },
+    {
+      "id": "m003",
+      "timestamp": "2026-11-06T20:07+08:00",
+      "sender": "self",
+      "type": "text",
+      "content": "我今天加班到八点，刚到家"
+    },
+    {
+      "id": "m004",
+      "timestamp": "2026-11-06T20:10+08:00",
+      "sender": "other",
+      "type": "text",
+      "content": "这么晚啊，吃饭了吗？"
+    },
+    {
+      "id": "m005",
+      "timestamp": "2026-11-06T20:12+08:00",
+      "sender": "self",
+      "type": "text",
+      "content": "还没，打算煮点面"
+    },
+    {
+      "id": "m006",
+      "timestamp": "2026-11-06T20:14+08:00",
+      "sender": "other",
+      "type": "text",
+      "content": "别老吃面，点个热汤吧"
+    },
+    {
+      "id": "m007",
+      "timestamp": "2026-11-07T09:30+08:00",
+      "sender": "self",
+      "type": "text",
+      "content": "早，昨天谢谢你的关心"
+    },
+    {
+      "id": "m008",
+      "timestamp": "2026-11-07T09:45+08:00",
+      "sender": "other",
+      "type": "text",
+      "content": "早呀～今天也要好好吃饭"
+    },
+    {
+      "id": "m009",
+      "timestamp": "2026-11-07T09:46+08:00",
+      "sender": "self",
+      "type": "text",
+      "content": "周末有个摄影展，你有兴趣一起去看看吗？"
+    },
+    {
+      "id": "m010",
+      "timestamp": "2026-11-07T10:20+08:00",
+      "sender": "other",
+      "type": "text",
+      "content": "周六下午可以，具体在哪？"
+    },
+    {
+      "id": "m011",
+      "timestamp": "2026-11-08T18:00+08:00",
+      "sender": "self",
+      "type": "text",
+      "content": "今天把展看完啦，拍了几张照片"
+    },
+    {
+      "id": "m012",
+      "timestamp": "2026-11-08T18:12+08:00",
+      "sender": "other",
+      "type": "text",
+      "content": "哈哈发我看看，我很期待"
+    }
+  ],
+  "metadata": {
+    "total_messages": 12,
+    "unknown_senders": 0,
+    "anonymized": true,
+    "id_origin": "export",
+    "timestamp_precision": "minute",
+    "note": "全部内容为虚构测试数据，不对应任何真实人物与真实聊天"
+  }
+}

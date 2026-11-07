@@ -1,0 +1,6 @@
+/.preview-deps/
+/.uv-cache/
+/.venv/
+/.env
+/.env.*
+!/.env.example

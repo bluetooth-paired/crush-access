@@ -1,0 +1,49 @@
+{
+  "schema_version": "1.0",
+  "source": "wechat-cli",
+  "chat_type": "private",
+  "messages": [
+    {
+      "id": "original-01",
+      "timestamp": "2026-11-07T09:01+08:00",
+      "sender": "other",
+      "type": "text",
+      "content": "第一条是 TA 发的 🌸\n这是同一条消息的第二行！"
+    },
+    {
+      "id": "original-02",
+      "timestamp": "2026-11-07T09:02+08:00",
+      "sender": "self",
+      "type": "text",
+      "content": "你好！😀"
+    },
+    {
+      "id": "original-03",
+      "timestamp": "2026-11-07T09:03+08:00",
+      "sender": "unknown",
+      "type": "text",
+      "content": "无法确认发送方的消息"
+    },
+    {
+      "id": "original-04",
+      "timestamp": "2026-11-07T09:04+08:00",
+      "sender": "self",
+      "type": "text",
+      "content": "有空一起看展览吗？"
+    },
+    {
+      "id": "original-05",
+      "timestamp": "2026-11-07T09:05+08:00",
+      "sender": "other",
+      "type": "text",
+      "content": "可以呀！期待～❤️"
+    }
+  ],
+  "metadata": {
+    "total_messages": 5,
+    "unknown_senders": 1,
+    "anonymized": false,
+    "id_origin": "export",
+    "timestamp_precision": "minute"
+  }
+}

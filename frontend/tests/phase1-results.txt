@@ -1,0 +1,9 @@
+PASS V6 首页/导航/档案未退化
+PASS JSON 粘贴 schema1/sender_name/时间/ID/统计
+PASS 非法 JSON 拦截，未当作文本
+PASS 标准 chat.json 上传及消息预览
+PASS 不同 Mock 场景图表动态变化：84→24
+PASS 军师预设多轮回复/历史状态（非LLM）
+PASS 真实模式：身份确认、发送许可、未配置协议时禁止上传
+PASS 后端断网显式报错；用户手动切演示后恢复完整军师
+PASS 无未捕获浏览器 JS 异常

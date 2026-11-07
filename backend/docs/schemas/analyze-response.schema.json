@@ -1,0 +1,786 @@
+{
+  "$defs": {
+    "Advisor": {
+      "additionalProperties": true,
+      "description": "AI 情感军师输出。",
+      "properties": {
+        "relationship_summary": {
+          "default": "",
+          "title": "Relationship Summary",
+          "type": "string"
+        },
+        "strongest_signals": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Strongest Signals",
+          "type": "array"
+        },
+        "uncertainties": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Uncertainties",
+          "type": "array"
+        },
+        "suggestions": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Suggestions",
+          "type": "array"
+        }
+      },
+      "title": "Advisor",
+      "type": "object"
+    },
+    "DailyPoint": {
+      "additionalProperties": true,
+      "properties": {
+        "date": {
+          "title": "Date",
+          "type": "string"
+        },
+        "self": {
+          "default": 0,
+          "title": "Self",
+          "type": "integer"
+        },
+        "other": {
+          "default": 0,
+          "title": "Other",
+          "type": "integer"
+        },
+        "unknown": {
+          "default": 0,
+          "title": "Unknown",
+          "type": "integer"
+        },
+        "total": {
+          "default": 0,
+          "title": "Total",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "date"
+      ],
+      "title": "DailyPoint",
+      "type": "object"
+    },
+    "DataQuality": {
+      "additionalProperties": true,
+      "properties": {
+        "total_messages": {
+          "default": 0,
+          "title": "Total Messages",
+          "type": "integer"
+        },
+        "confirmed_sender_ratio": {
+          "default": 0.0,
+          "title": "Confirmed Sender Ratio",
+          "type": "number"
+        },
+        "unknown_sender_ratio": {
+          "default": 0.0,
+          "title": "Unknown Sender Ratio",
+          "type": "number"
+        },
+        "time_span": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Time Span"
+        },
+        "analyzable_text_ratio": {
+          "default": 0.0,
+          "title": "Analyzable Text Ratio",
+          "type": "number"
+        },
+        "time_order_anomalies": {
+          "default": 0,
+          "title": "Time Order Anomalies",
+          "type": "integer"
+        },
+        "duplicate_message_risk": {
+          "default": "unknown",
+          "title": "Duplicate Message Risk",
+          "type": "string"
+        },
+        "partial_export_possible": {
+          "default": false,
+          "title": "Partial Export Possible",
+          "type": "boolean"
+        },
+        "coverage": {
+          "default": "",
+          "title": "Coverage",
+          "type": "string"
+        },
+        "limitations": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Limitations",
+          "type": "array"
+        }
+      },
+      "title": "DataQuality",
+      "type": "object"
+    },
+    "InteractionPattern": {
+      "additionalProperties": true,
+      "description": "从聊天中提取的多方可核查互动事件（对应「事件抽取」）。",
+      "properties": {
+        "event_id": {
+          "title": "Event Id",
+          "type": "string"
+        },
+        "category": {
+          "title": "Category",
+          "type": "string"
+        },
+        "participants": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Participants",
+          "type": "array"
+        },
+        "message_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Message Ids",
+          "type": "array"
+        },
+        "description": {
+          "default": "",
+          "title": "Description",
+          "type": "string"
+        },
+        "certainty": {
+          "default": "medium",
+          "enum": [
+            "high",
+            "medium",
+            "low"
+          ],
+          "title": "Certainty",
+          "type": "string"
+        }
+      },
+      "required": [
+        "event_id",
+        "category"
+      ],
+      "title": "InteractionPattern",
+      "type": "object"
+    },
+    "MetricsSummary": {
+      "additionalProperties": true,
+      "description": "前端绘制图表所需的指标集合（与 analysis.schema.Metrics 对齐）。",
+      "properties": {
+        "message_counts": {
+          "additionalProperties": {
+            "type": "integer"
+          },
+          "title": "Message Counts",
+          "type": "object"
+        },
+        "participation_balance": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Participation Balance"
+        },
+        "other_question_ratio": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Other Question Ratio"
+        },
+        "shared_activity_ratio": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Shared Activity Ratio"
+        },
+        "positive_tone_ratio": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Positive Tone Ratio"
+        },
+        "interaction_index": {
+          "default": 0.0,
+          "title": "Interaction Index",
+          "type": "number"
+        },
+        "interaction_index_components": {
+          "items": {
+            "additionalProperties": true,
+            "type": "object"
+          },
+          "title": "Interaction Index Components",
+          "type": "array"
+        },
+        "formulas": {
+          "items": {
+            "additionalProperties": true,
+            "type": "object"
+          },
+          "title": "Formulas",
+          "type": "array"
+        },
+        "semantic_detection": {
+          "additionalProperties": true,
+          "title": "Semantic Detection",
+          "type": "object"
+        },
+        "disclaimer": {
+          "default": "",
+          "title": "Disclaimer",
+          "type": "string"
+        }
+      },
+      "title": "MetricsSummary",
+      "type": "object"
+    },
+    "PortraitDimension": {
+      "description": "画像维度：同时提供中文标签与英文 key，方便前端画雷达图 / 进度条。",
+      "properties": {
+        "key": {
+          "title": "Key",
+          "type": "string"
+        },
+        "label": {
+          "title": "Label",
+          "type": "string"
+        },
+        "level": {
+          "title": "Level",
+          "type": "string"
+        },
+        "score": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "高=80 / 中=55 / 低=30 / 数据不足=null",
+          "title": "Score"
+        },
+        "detail": {
+          "default": "",
+          "title": "Detail",
+          "type": "string"
+        },
+        "evidence_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Evidence Ids",
+          "type": "array"
+        },
+        "confidence": {
+          "default": "low",
+          "title": "Confidence",
+          "type": "string"
+        }
+      },
+      "required": [
+        "key",
+        "label",
+        "level"
+      ],
+      "title": "PortraitDimension",
+      "type": "object"
+    },
+    "PortraitGroup": {
+      "properties": {
+        "self_portrait": {
+          "items": {
+            "$ref": "#/$defs/PortraitDimension"
+          },
+          "title": "Self Portrait",
+          "type": "array"
+        },
+        "other_portrait": {
+          "items": {
+            "$ref": "#/$defs/PortraitDimension"
+          },
+          "title": "Other Portrait",
+          "type": "array"
+        }
+      },
+      "title": "PortraitGroup",
+      "type": "object"
+    },
+    "Profile": {
+      "additionalProperties": true,
+      "description": "双向画像的 7 个维度（self 与 other 各一份）。",
+      "properties": {
+        "话题主动性": {
+          "$ref": "#/$defs/ProfileDimension"
+        },
+        "对话延续程度": {
+          "$ref": "#/$defs/ProfileDimension"
+        },
+        "个人生活分享": {
+          "$ref": "#/$defs/ProfileDimension"
+        },
+        "情绪表达程度": {
+          "$ref": "#/$defs/ProfileDimension"
+        },
+        "关心与回应程度": {
+          "$ref": "#/$defs/ProfileDimension"
+        },
+        "邀约与线下互动": {
+          "$ref": "#/$defs/ProfileDimension"
+        },
+        "关系边界表达": {
+          "$ref": "#/$defs/ProfileDimension"
+        }
+      },
+      "title": "Profile",
+      "type": "object"
+    },
+    "ProfileDimension": {
+      "additionalProperties": true,
+      "description": "画像单个维度，保留 level / detail 字段以减少前端迁移成本。",
+      "properties": {
+        "level": {
+          "default": "数据不足",
+          "enum": [
+            "高",
+            "中",
+            "低",
+            "数据不足"
+          ],
+          "title": "Level",
+          "type": "string"
+        },
+        "detail": {
+          "default": "",
+          "title": "Detail",
+          "type": "string"
+        },
+        "evidence_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Evidence Ids",
+          "type": "array"
+        },
+        "confidence": {
+          "default": "low",
+          "enum": [
+            "high",
+            "medium",
+            "low"
+          ],
+          "title": "Confidence",
+          "type": "string"
+        }
+      },
+      "title": "ProfileDimension",
+      "type": "object"
+    },
+    "RelationshipAssessment": {
+      "additionalProperties": true,
+      "description": "关系评估，包含反向验证所需的审慎要素。",
+      "properties": {
+        "stage": {
+          "default": "信息不足",
+          "title": "Stage",
+          "type": "string"
+        },
+        "summary": {
+          "default": "",
+          "title": "Summary",
+          "type": "string"
+        },
+        "supporting_facts": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Supporting Facts",
+          "type": "array"
+        },
+        "contradicting_facts": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Contradicting Facts",
+          "type": "array"
+        },
+        "neutral_alternatives": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Neutral Alternatives",
+          "type": "array"
+        },
+        "confidence": {
+          "default": "low",
+          "enum": [
+            "high",
+            "medium",
+            "low"
+          ],
+          "title": "Confidence",
+          "type": "string"
+        }
+      },
+      "title": "RelationshipAssessment",
+      "type": "object"
+    },
+    "SenderStats": {
+      "additionalProperties": true,
+      "properties": {
+        "message_count": {
+          "default": 0,
+          "title": "Message Count",
+          "type": "integer"
+        },
+        "message_ratio": {
+          "default": 0.0,
+          "title": "Message Ratio",
+          "type": "number"
+        },
+        "char_count": {
+          "default": 0,
+          "title": "Char Count",
+          "type": "integer"
+        }
+      },
+      "title": "SenderStats",
+      "type": "object"
+    },
+    "Signal": {
+      "additionalProperties": true,
+      "description": "好感信号（四分类），每条必须可回溯到真实消息。",
+      "properties": {
+        "category": {
+          "enum": [
+            "positive",
+            "negative",
+            "neutral",
+            "ambiguous"
+          ],
+          "title": "Category",
+          "type": "string"
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "description": {
+          "default": "",
+          "title": "Description",
+          "type": "string"
+        },
+        "evidence_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Evidence Ids",
+          "type": "array"
+        },
+        "positive_interpretation": {
+          "default": "",
+          "title": "Positive Interpretation",
+          "type": "string"
+        },
+        "alternative_interpretation": {
+          "default": "",
+          "title": "Alternative Interpretation",
+          "type": "string"
+        },
+        "evidence_strength": {
+          "default": "medium",
+          "enum": [
+            "strong",
+            "medium",
+            "weak"
+          ],
+          "title": "Evidence Strength",
+          "type": "string"
+        },
+        "impact": {
+          "default": "",
+          "title": "Impact",
+          "type": "string"
+        },
+        "scope": {
+          "default": "",
+          "title": "Scope",
+          "type": "string"
+        }
+      },
+      "required": [
+        "category",
+        "name"
+      ],
+      "title": "Signal",
+      "type": "object"
+    },
+    "Statistics": {
+      "additionalProperties": true,
+      "properties": {
+        "self": {
+          "$ref": "#/$defs/SenderStats"
+        },
+        "other": {
+          "$ref": "#/$defs/SenderStats"
+        },
+        "unknown": {
+          "$ref": "#/$defs/SenderStats"
+        },
+        "messages_per_day": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Messages Per Day"
+        },
+        "avg_interval_seconds": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Avg Interval Seconds"
+        },
+        "median_interval_seconds": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Median Interval Seconds"
+        },
+        "consecutive_message_runs": {
+          "default": 0,
+          "title": "Consecutive Message Runs",
+          "type": "integer"
+        },
+        "conversation_turns": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Conversation Turns"
+        },
+        "self_initiation_ratio": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Self Initiation Ratio"
+        },
+        "initiation_note": {
+          "default": "",
+          "title": "Initiation Note",
+          "type": "string"
+        }
+      },
+      "title": "Statistics",
+      "type": "object"
+    }
+  },
+  "additionalProperties": true,
+  "description": "API A 响应体：报告字段 + 生命周期元信息。",
+  "properties": {
+    "analysis_id": {
+      "title": "Analysis Id",
+      "type": "string"
+    },
+    "client_id": {
+      "title": "Client Id",
+      "type": "string"
+    },
+    "created_at": {
+      "title": "Created At",
+      "type": "string"
+    },
+    "expires_at": {
+      "title": "Expires At",
+      "type": "string"
+    },
+    "status": {
+      "default": "completed",
+      "title": "Status",
+      "type": "string"
+    },
+    "data_quality": {
+      "$ref": "#/$defs/DataQuality"
+    },
+    "statistics": {
+      "$ref": "#/$defs/Statistics"
+    },
+    "metrics": {
+      "$ref": "#/$defs/MetricsSummary"
+    },
+    "daily_distribution": {
+      "items": {
+        "$ref": "#/$defs/DailyPoint"
+      },
+      "title": "Daily Distribution",
+      "type": "array"
+    },
+    "portraits": {
+      "$ref": "#/$defs/PortraitGroup"
+    },
+    "signals": {
+      "items": {
+        "$ref": "#/$defs/Signal"
+      },
+      "title": "Signals",
+      "type": "array"
+    },
+    "interaction_patterns": {
+      "items": {
+        "$ref": "#/$defs/InteractionPattern"
+      },
+      "title": "Interaction Patterns",
+      "type": "array"
+    },
+    "relationship_assessment": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/RelationshipAssessment"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "advisor": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Advisor"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "self_profile": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Profile"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "other_profile": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Profile"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "evidence": {
+      "additionalProperties": true,
+      "title": "Evidence",
+      "type": "object"
+    },
+    "limitations": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Limitations",
+      "type": "array"
+    },
+    "errors": {
+      "items": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "title": "Errors",
+      "type": "array"
+    },
+    "ai_config": {
+      "additionalProperties": true,
+      "description": "本次分析的 AI 配置生效情况（thinking）",
+      "title": "Ai Config",
+      "type": "object"
+    }
+  },
+  "required": [
+    "analysis_id",
+    "client_id",
+    "created_at",
+    "expires_at"
+  ],
+  "title": "AnalyzeResponse",
+  "type": "object"
+}

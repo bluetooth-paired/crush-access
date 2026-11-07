@@ -1,0 +1,71 @@
+{
+  "score": {
+    "value": 74,
+    "unit": "percent"
+  },
+  "metrics": [
+    {
+      "id": "balance",
+      "name": "双方消息参与平衡",
+      "value": 0.89,
+      "unit": "fraction",
+      "color": "pink"
+    },
+    {
+      "id": "questions",
+      "name": "TA 在消息中的提问占比",
+      "value": 42,
+      "unit": "percent",
+      "color": "violet"
+    },
+    {
+      "id": "activities",
+      "name": "TA 的共同活动表达占比",
+      "value": 0.3,
+      "unit": "fraction",
+      "color": "orange"
+    },
+    {
+      "id": "warm",
+      "name": "TA 的积极语气表达占比",
+      "value": 68,
+      "unit": "percent",
+      "color": "green"
+    }
+  ],
+  "summary": {
+    "total": 14,
+    "otherShare": {
+      "value": 0.5,
+      "unit": "fraction"
+    },
+    "qTa": 2
+  },
+  "chart": [
+    {
+      "label": "片段1",
+      "count": 4
+    },
+    {
+      "label": "片段2",
+      "count": 4
+    },
+    {
+      "label": "片段3",
+      "count": 4
+    },
+    {
+      "label": "片段4",
+      "count": 2
+    }
+  ],
+  "signals": [
+    {
+      "type": "good",
+      "title": "主动延续共同话题",
+      "desc": "这是虚构演示数据，不代表对方真实心理。",
+      "quote": "到时联系"
+    }
+  ],
+  "source": "fixture"
+}

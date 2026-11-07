@@ -1,0 +1,67 @@
+{
+  "additionalProperties": false,
+  "description": "API B 请求体。",
+  "properties": {
+    "analysis_id": {
+      "description": "API A 返回的 analysis_id",
+      "title": "Analysis Id",
+      "type": "string"
+    },
+    "message": {
+      "description": "用户当前提问",
+      "minLength": 1,
+      "title": "Message",
+      "type": "string"
+    },
+    "session_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "会话 ID；不传则新建会话",
+      "title": "Session Id"
+    },
+    "client_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "与创建分析时一致的客户端标识",
+      "title": "Client Id"
+    },
+    "thinking_level": {
+      "default": "auto",
+      "description": "思考强度 auto/low/medium/high；不支持时按服务端默认执行，见响应 ai_config",
+      "enum": [
+        "auto",
+        "low",
+        "medium",
+        "high"
+      ],
+      "title": "Thinking Level",
+      "type": "string"
+    },
+    "web_search": {
+      "default": false,
+      "description": "是否开启联网搜索（默认关闭）；仅使用清洗后的用户提问作为搜索词，不上传聊天原文",
+      "title": "Web Search",
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "analysis_id",
+    "message"
+  ],
+  "title": "AdvisorChatRequest",
+  "type": "object"
+}
