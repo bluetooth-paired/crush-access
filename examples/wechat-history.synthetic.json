@@ -1,0 +1,17 @@
+{
+  "chat": "演示对方",
+  "username": "synthetic-contact",
+  "is_group": false,
+  "count": 3,
+  "offset": 0,
+  "limit": 200,
+  "start_time": null,
+  "end_time": null,
+  "type": "text",
+  "messages": [
+    "[2026-11-07 10:30] 演示本人: 周末有空吗？",
+    "[2026-11-07 10:32] 演示对方: 有呀，怎么啦 😊\n周六下午有空。",
+    "[2026-11-07 10:34] 地点：学校北门见。"
+  ],
+  "failures": null
+}
