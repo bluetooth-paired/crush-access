@@ -104,9 +104,12 @@
         const detail = (response.errors || []).map(x => x.message || x.code).filter(Boolean).join('；');
         throw new Error(detail || '后端分析失败，请检查模型配置或稍后重试');
       }
-      if (typeof response.analysis_id !== 'string' || !response.analysis_id) throw new Error('分析响应缺少 analysis_id');
-      if (typeof response.client_id !== 'string' || !response.client_id) throw new Error('分析响应缺少 client_id');
-      if (!response.metrics || typeof response.metrics !== 'object') throw new Error('分析响应缺少 metrics');
+      if (!['completed','partial'].includes(status)) throw new Error(`分析响应状态不可展示：${String(status)}`);
+      if (typeof response.analysis_id !== 'string' || !response.analysis_id.trim()) throw new Error('分析响应缺少 analysis_id');
+      if (typeof response.client_id !== 'string' || !response.client_id.trim()) throw new Error('分析响应缺少 client_id');
+      if (!response.metrics || typeof response.metrics !== 'object' || Array.isArray(response.metrics)) throw new Error('分析响应缺少 metrics');
+      if (!response.metrics.message_counts || typeof response.metrics.message_counts !== 'object') throw new Error('分析响应缺少 message_counts');
+      if (!Object.prototype.hasOwnProperty.call(response.metrics,'interaction_index')) throw new Error('分析响应缺少 interaction_index');
       const dashboard = toDashboard(response);
       return {
         analysisId: response.analysis_id,

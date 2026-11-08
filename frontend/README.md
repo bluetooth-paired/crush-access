@@ -4,15 +4,19 @@
 
 **当前状态：前端 API 契约适配和浏览器模拟联调已完成；尚未连接实际公网后端。** 要使用真实 AI，必须先部署后端并配置下方 Base URL。Mock/演示模式始终可独立运行。
 
-## 启动前端
+## 本地静态预览
 
-解压后进入 `heart-signal-v6/` 目录：
+安装 Python 3.10 或以上版本。在 Windows 双击本目录的 `启动本地网页.bat`，或在 `frontend/` 目录运行：
 
 ```bash
-python -m http.server 8080
+python local_server.py
 ```
 
-打开 `http://localhost:8080/`。也可以部署该目录到 GitHub Pages。前端是静态 HTML/CSS/JavaScript，不需要 Node 构建。
+启动器使用 `127.0.0.1` 上的可用端口，并自动打开浏览器。若浏览器没有自动打开，复制终端里的地址。关闭终端或按 `Ctrl+C` 即可停止。启动只需要 Python 标准库。
+
+- 军师交流可直接打开，演示模式支持本地多轮回复。真实 API 模式需要先完成聊天分析。
+- 关系报告汇总已有画像、互动证据与军师回复，可用浏览器的打印功能保存为 PDF。报告由前端整理，当前没有接入 Agent 3。
+- 移动端可横向滑动导航栏。后端 API 联调步骤见[第二阶段集成交接](../handoff/README.md)。
 
 ## 配置真实后端
 
@@ -78,11 +82,15 @@ window.HeartSignalAPIConfig = Object.freeze({
 
 ```bash
 pip install playwright
+python -m playwright install chromium
 python tests/test_import.py
 python tests/test_phase1.py
 python tests/test_api_adapter.py
 python tests/test_backend_contract.py
+python tests/test_p0_flow.py
 ```
+
+也可将环境变量 `CHROMIUM_PATH` 指向本机 Chromium 或 Microsoft Edge 的可执行文件。
 
 `test_backend_contract.py` 使用完全虚构的 API 响应和虚构 JSON，验证真实请求/响应契约映射、无时区时间戳、`client_id`、双 API、多轮 `session_id`、设置参数、证据和建议渲染。它是**浏览器级模拟联调**，不是公网后端或真实模型的端到端测试。
 

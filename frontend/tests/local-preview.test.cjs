@@ -15,7 +15,7 @@ test('profile editing and local advisor example keep the original chat draft', a
     });
     const site = pathToFileURL(path.resolve(__dirname, '../index.html')).href;
     await page.goto(site);
-    await page.locator('nav [data-go="profile"]').click();
+    await page.locator('nav.nav-links [data-go="profile"]').click();
     await page.locator('[data-action="demo-login"]').first().click();
     const name = page.locator('[data-profile="meNick"]');
     await name.click();
@@ -23,21 +23,20 @@ test('profile editing and local advisor example keep the original chat draft', a
     await page.keyboard.insertText('虚构昵称');
     assert.equal(await name.inputValue(), '虚构昵称');
 
-    await page.locator('nav [data-go="import"]').click();
+    await page.locator('nav.nav-links [data-go="import"]').click();
     await page.locator('#chatInput').fill('我: 虚构草稿');
     await page.locator('[data-action="sample"]').first().click();
-    await page.locator('nav [data-go="advisor"]').click();
+    await page.locator('nav.nav-links [data-go="advisor"]').click();
     await page.locator('[data-action="ask"]').first().click();
     assert.equal(await page.locator('.chat-msg.bot').count(), 2);
     assert.match(await page.locator('.chat-composer .disclaimer').innerText(), /演示模式/);
     assert.deepEqual(api, []);
 
-    await page.locator('nav [data-go="import"]').click();
+    await page.locator('nav.nav-links [data-go="import"]').click();
     assert.equal(await page.locator('#chatInput').inputValue(), '我: 虚构草稿');
     await page.goto(site + '#advisor');
     await page.reload();
     assert.equal(new URL(page.url()).hash, '#advisor');
-    await page.locator('[data-action="sample-advisor"]').click();
     await page.locator('[data-action="ask"]').first().click();
     assert.equal(await page.locator('.chat-msg.bot').count(), 2);
   } finally {

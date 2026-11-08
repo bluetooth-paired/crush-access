@@ -1,6 +1,6 @@
 /*
  * 申请查看你的好感度 · 申请查看你的好感度
- * Standalone interactive design prototype. No remote requests, no persistence.
+ * Static frontend with optional team FastAPI integration; demo mode makes no API requests.
  * Deterministic, rule-based demo analysis: NOT an AI, psychological assessment,
  * scientific relationship score, or a prediction of anyone's feelings.
  */
@@ -57,7 +57,7 @@
   const sampleText = `2026-11-02 19:12 我: 你上次说的艺术展终于开了诶！\n2026-11-02 19:14 小林: 哈哈真的吗！我刷到过那个展\n2026-11-02 19:15 我: 听说互动装置特别有意思\n2026-11-02 19:17 小林: 你最近是不是也在准备期中呀？\n2026-11-02 19:18 我: 对！一边复习一边想出去玩😂\n2026-11-02 19:20 小林: 哈哈哈谁不是呢，最近感觉每天都好累\n2026-11-03 21:03 小林: 对了你上次推荐的歌我听啦，很好听！\n2026-11-03 21:04 我: 真的嘛！哪首最好听\n2026-11-03 21:05 小林: 第二首！前奏一出来我就喜欢了\n2026-11-03 21:06 小林: 你还有类似的歌单吗？\n2026-11-03 21:08 我: 有的，我晚点整理给你\n2026-11-03 21:09 小林: 好呀！期待你的分享\n2026-11-04 18:22 我: 那个展我看了下周末还有票\n2026-11-04 18:23 小林: 诶好耶，你打算什么时候去呀？\n2026-11-04 18:25 我: 可能周六下午\n2026-11-04 18:27 小林: 下次可以一起去呀，我正好也想看！\n2026-11-04 18:29 我: 可以！我查下具体时间\n2026-11-04 18:31 小林: 好～你到时候跟我说就行 🌷`;
 
   const state = {
-    view:'home', tab:'text', raw:'', mode:'demo', mockKey:null, dashboard:null, report:null, analysisId:null, sessionId:null, clientId:null, analysisRunToken:0, chatRunToken:0, apiBusy:false, apiError:'', identityConfirmed:false, sendConsent:false, advisorBusy:false, advisorError:'', failedAdvisorQuestion:'', ownName:'我', otherName:'小林', ownMBTI:'', otherMBTI:'', demo:false, consent:false, apiHealth:null, apiHealthError:'', apiHealthLoading:false, thinkingLevel:'auto', webSearch:false, advisorSuggestions:[], advisorBoundaryNotes:[],
+    view:'home', tab:'text', raw:'', mode:'demo', mockKey:null, dashboard:null, report:null, analysisId:null, sessionId:null, clientId:null, analysisRunToken:0, chatRunToken:0, apiBusy:false, apiError:'', identityConfirmed:false, sendConsent:false, advisorBusy:false, advisorError:'', failedAdvisorQuestion:'', ownName:'我', otherName:'小林', ownMBTI:'', otherMBTI:'', demo:false, consent:false, apiHealth:null, apiHealthError:'', apiHealthLoading:false, apiHealthRunToken:0, thinkingLevel:'auto', webSearch:false, advisorSuggestions:[], advisorBoundaryNotes:[],
     analysis:null, messages:[], parseResult:{format:'empty',messages:[],error:null,warnings:[]}, fileFormatHint:null, advisorMessages:[], advisorInput:'', privacyOpen:false, loggedIn:false, authTab:'login', loginMethod:'phone', authName:'', profileSaved:false, profileStep:0, profileDirection:'forward', profile:{meNick:'',meGender:'',meAge:'',meMBTI:'',meTraits:[],meStatus:'',meStyle:'',meNeed:'',taNick:'',taGender:'',taAge:'',taMBTI:'',taTraits:[],taStyle:'',taEmotional:'',taUnsure:'',relation:'',stage:'',frequency:'',events:'',eventItems:[],touch:'',boundaries:'',goal:'signals',concern:''}
   };
   function getClientId() {
@@ -80,11 +80,12 @@
     {id:'import',name:'聊天导入',icon:'upload'},
     {id:'portraits',name:'双向画像',icon:'users'},
     {id:'signals',name:'互动信号',icon:'chart'},
-    {id:'advisor',name:'军师交流',icon:'chat'}
+    {id:'advisor',name:'军师交流',icon:'chat'},
+    {id:'report',name:'关系报告',icon:'book'}
   ];
   function topbar(){
-    const links=[['home','首页'],['import','聊天导入'],['profile','人物档案'],['portraits','双向画像'],['signals','互动信号'],['advisor','军师交流']];
-    return `<header class="site-header v4-header"><a class="brand" href="#home" data-go="home"><span class="brand-icon">${ic('heart',23)}</span><span>申请查看你的好感度<small>HEART SIGNAL LAB</small></span></a><nav class="nav-links">${links.map(([id,name])=>`<button data-go="${id}" class="${state.view===id?'current':''}">${name}</button>`).join('')}</nav><div class="v5-nav-right"><button class="v5-profile-link ${state.view==='auth'?'selected':''}" data-go="${state.loggedIn?'profile':'auth'}">${state.loggedIn?'♡ 档案设置':'登录 / 注册'}</button><button class="nav-action" data-go="import">开始分析 ${ic('arrow',15)}</button></div></header>`;
+    const links=[['home','首页'],['import','聊天导入'],['profile','人物档案'],['portraits','双向画像'],['signals','互动信号'],['advisor','军师交流'],['report','关系报告']];
+    return `<header class="site-header v4-header"><a class="brand" href="#home" data-go="home"><span class="brand-icon">${ic('heart',23)}</span><span>申请查看你的好感度<small>HEART SIGNAL LAB</small></span></a><nav class="nav-links">${links.map(([id,name])=>`<button data-go="${id}" class="${state.view===id?'current':''}">${name}</button>`).join('')}</nav><div class="v5-nav-right"><button class="v5-profile-link ${state.view==='auth'?'selected':''}" data-go="${state.loggedIn?'profile':'auth'}">${state.loggedIn?'♡ 档案设置':'登录 / 注册'}</button><button class="nav-action" data-go="import">开始分析 ${ic('arrow',15)}</button></div></header><nav class="mobile-shortcuts" aria-label="手机端页面导航">${links.map(([id,name])=>`<button data-go="${id}" class="${state.view===id?'current':''}" aria-current="${state.view===id?'page':'false'}">${name}</button>`).join('')}</nav>`;
   }
     function home(){
     return `${topbar()}<main class="v4-home">
@@ -99,11 +100,12 @@
           ${loginForm(true)}
         </div>
       </section>
-      <section class="max v4-feature-block"><div class="v4-section-intro"><span>FOUR SIMPLE STEPS</span><h2>从一段聊天，到更清楚的下一步</h2><p>没有复杂操作，只保留你真正需要的功能。</p></div><div class="v4-features">
+      <section class="max v4-feature-block"><div class="v4-section-intro"><span>FIVE SIMPLE STEPS</span><h2>从一段聊天，到更清楚的下一步</h2><p>没有复杂操作，只保留你真正需要的功能。</p></div><div class="v4-features">
         <button data-go="import"><div class="v4-feature-icon">${ic('upload',23)}</div><span>01 / CHAT</span><h3>聊天导入</h3><p>粘贴文字或选择文本文件，快速整理聊天内容。</p><b>立即导入 ${ic('arrow',15)}</b></button>
         <button data-go="portraits"><div class="v4-feature-icon">${ic('users',23)}</div><span>02 / PEOPLE</span><h3>双向画像</h3><p>了解双方表达习惯与互动模式。</p><b>生成画像 ${ic('arrow',15)}</b></button>
         <button data-go="signals"><div class="v4-feature-icon">${ic('chart',23)}</div><span>03 / SIGNALS</span><h3>互动信号</h3><p>观察主动提问、话题延续与边界信号。</p><b>查看信号 ${ic('arrow',15)}</b></button>
         <button data-go="advisor"><div class="v4-feature-icon">${ic('chat',23)}</div><span>04 / WINGMAN</span><h3>军师交流</h3><p>让子乔给你自然、不越界的回复灵感。</p><b>找子乔聊 ${ic('arrow',15)}</b></button>
+        <button data-go="report"><div class="v4-feature-icon">${ic('book',23)}</div><span>05 / JOURNAL</span><h3>关系报告</h3><p>把画像、证据和建议整理成一份可保存的手账。</p><b>查看报告 ${ic('arrow',15)}</b></button>
       </div></section><section class="max v4-bottom-line"><div>♡ &nbsp;心动需要勇气，也需要一点清醒。</div><button data-go="import" class="btn btn-white">从聊天开始 ${ic('arrow',15)}</button></section></main>${footer()}`;
   }
   function footer(){return `<footer class="footer"><div class="max"><span>♡ 申请查看你的好感度 · 学生项目交互演示</span><span>真诚沟通，尊重彼此意愿。</span></div></footer>`;}
@@ -204,22 +206,44 @@
     return `<div class="v5-context-in-results"><strong>♡ 已参考人物档案</strong><p>${bits||'未填写关系阶段'}${extra?`<br/>${extra}`:''}${event?`<br/>共同经历：${esc(event)}`:''}${concern?`<br/>当前关注：${esc(concern)}`:''}</p><small>这只是用户填写的背景，不能证明 TA 的真实想法。</small><button data-go="profile">编辑档案 →</button></div>`;
   }
 
+  // P0-2: /health proves transport availability, NOT a successful live LLM invocation.
+  // The local 8010 integration server intentionally uses a model substitute.
+  function modelConnectionKind(health=state.apiHealth) {
+    if(!health||health.status!=='ok')return 'unverified';
+    const model=health.model||{};
+    const provider=String(model.provider||health.features?.provider||'').toLowerCase();
+    if(/(?:local-preview|simulat|mock|fixture|fake|stub)/.test(provider)||/simulat|mock|fixture|fake|stub/.test(String(model.model||'').toLowerCase()))return 'substitute';
+    if(model.configured===false)return 'not-configured';
+    if(model.configured===true)return 'configured-not-proven';
+    return 'unverified';
+  }
+  function connectionMessage() {
+    if(state.apiHealthLoading)return '正在检查后端连接…';
+    if(state.analysisId&&state.report)return modelConnectionKind()==='substitute'?'已获取模拟后端分析响应；不是实际 AI 推理。':'本次分析 API 已成功返回；模型实际推理仍需服务端日志验收。';
+    if(state.apiHealthError)return state.apiHealthError;
+    switch(modelConnectionKind()) {
+      case 'substitute': return '已连接本地模拟后端：可验收接口和图表，但不是实际 AI 模型推理。';
+      case 'not-configured': return 'HTTP 后端已连接，但没有配置模型凭据；真实分析可能返回 MODEL_NOT_CONFIGURED。';
+      case 'configured-not-proven': return 'HTTP 后端已连接且报告模型已配置；是否真正完成推理，需以本次分析响应和真实模型测试为准。';
+      default: return state.apiHealth?.status==='ok'?'HTTP 后端已连接；模型类型尚未核实。':'请先在 api/config.js 配置后端 Base URL。';
+    }
+  }
   function modeStrip(){
     const real=state.mode==='real';
-    return `<div class="mode-strip" role="region" aria-label="分析模式"><strong>${real?'真实 API':'演示模式'}</strong><button class="mode-choice ${!real?'is-active':''}" data-action="mode-demo" aria-pressed="${!real}">演示模式</button><button class="mode-choice ${real?'is-active':''}" data-action="mode-real" aria-pressed="${real}">真实 API</button><span class="mode-note">${real?(state.apiHealthLoading?'正在检查后端…':state.apiHealth?.status==='ok'?'后端健康检查通过；仅在身份核对及授权后提交。':state.apiHealthError||'请先在 api/config.js 配置后端 HTTPS Base URL。'):'使用虚构 Mock 或浏览器本地规则演示，不调用外部 AI。'}</span>
+    return `<div class="mode-strip" role="region" aria-label="分析模式"><strong>${real?'后端 API':'演示模式'}</strong><button class="mode-choice ${!real?'is-active':''}" data-action="mode-demo" aria-pressed="${!real}">演示模式</button><button class="mode-choice ${real?'is-active':''}" data-action="mode-real" aria-pressed="${real}">真实 API</button><span class="mode-note">${real?esc(connectionMessage()):'使用虚构 Mock 或浏览器本地规则演示，不调用外部 AI。'}</span>
       ${!real?`<div class="mock-switch"><button data-action="mock-warm" class="${state.mockKey==='warm'?'active':''}">虚构示例 A · 积极交流</button><button data-action="mock-reserved" class="${state.mockKey==='reserved'?'active':''}">虚构示例 B · 尊重边界</button></div>`:''}</div>${state.apiError?`<div class="mode-error" role="alert">${ic('alert',16)} <span>${esc(state.apiError)}</span><button data-action="mode-demo">手动切换演示模式</button></div>`:''}`;
   }
   function workWrap(body) {return `${topbar()}<main class="v4-workspace v4-${state.view}"><div class="v4-work-inner max">${modeStrip()}${state.view!=='import'?profileContext():''}${body}</div></main>${footer()}`;}
 
   function heading(step,name,description,extra=''){
-    const eyebrow={import:'CHAT IMPORT',portraits:'DUAL PORTRAITS',signals:'CHAT SIGNALS',advisor:'ASK YOUR WINGMAN'}[state.view]||'HEART SIGNAL LAB';
-    const sticker=state.view==='advisor'?`<img class="v4-heading-face" src="images/ziqiao-photo.jpeg" alt="子乔形象"/>`:`<span class="v4-heading-signet">${ic(state.view==='import'?'upload':state.view==='portraits'?'users':'chart',24)}</span>`;
+    const eyebrow={import:'CHAT IMPORT',portraits:'DUAL PORTRAITS',signals:'CHAT SIGNALS',advisor:'ASK YOUR WINGMAN',report:'RELATIONSHIP JOURNAL'}[state.view]||'HEART SIGNAL LAB';
+    const sticker=state.view==='advisor'?`<img class="v4-heading-face" src="images/ziqiao-photo.jpeg" alt="子乔形象"/>`:`<span class="v4-heading-signet">${ic(state.view==='import'?'upload':state.view==='portraits'?'users':state.view==='report'?'book':'chart',24)}</span>`;
     return `<div class="page-heading v4-page-heading"><div><span class="v4-overline">${eyebrow} &nbsp; / &nbsp; ${esc(step)}</span><h1>${esc(name)}</h1><p>${esc(description)}</p></div><div class="v4-heading-right">${sticker}${state.demo?'<span class="pill orange">示例数据</span>':''}${extra}</div></div>`;
   }
   const mbtiOptions = ['','ISTJ','ISFJ','INFJ','INTJ','ISTP','ISFP','INFP','INTP','ESTP','ESFP','ENFP','ENTP','ESTJ','ESFJ','ENFJ','ENTJ'];
   const mbtiSelect = (label,id,value)=>`<div class="field"><label for="${id}">${label}</label><select id="${id}" data-field="${id}">${mbtiOptions.map(m=>`<option value="${m}" ${m===value?'selected':''}>${m||'不确定 / 不填写'}</option>`).join('')}</select></div>`;
   function importPage() {
-    const chat=state.messages; return workWrap(`${heading('STEP 01 / 04','先把聊天交给我们','支持粘贴 Schema 1.0 JSON 或普通聊天文本，也可以导入 .json / .txt / .csv 文件。截图 OCR 在后续版本接入。',`<button class="btn btn-sm btn-white" data-action="sample">${ic('spark',14)} 加载示例</button>`)}
+    const chat=state.messages; return workWrap(`${heading('STEP 01 / 05','先把聊天交给我们','支持粘贴 Schema 1.0 JSON 或普通聊天文本，也可以导入 .json / .txt / .csv 文件。截图 OCR 在后续版本接入。',`<button class="btn btn-sm btn-white" data-action="sample">${ic('spark',14)} 加载示例</button>`)}
       ${state.profileSaved?`<div class="v5-context-strip">${ic('users',17)} 已加载人物档案：${esc(state.profile.meNick||'我')} &amp; ${esc(state.profile.taNick||'TA')} · ${esc(state.profile.stage||'关系阶段未设置')}<button data-go="profile">编辑背景 →</button></div>`:''}<div class="layout-2"><div class="stack">
       <div class="panel"><div class="panel-header"><h2>01 · 这段故事的主角</h2><span class="pill purple">${ic('users',13)} 基本信息</span></div>
         <div class="field-grid"><div class="field"><label for="ownName">我的聊天昵称</label><input id="ownName" data-field="ownName" value="${esc(state.ownName)}" maxlength="24" placeholder="例如：我"/></div><div class="field"><label for="otherName">TA 的聊天昵称</label><input id="otherName" data-field="otherName" value="${esc(state.otherName)}" maxlength="24" placeholder="例如：小林"/></div>${mbtiSelect('我的 MBTI（可选）','ownMBTI',state.ownMBTI)}${mbtiSelect('TA 自述的 MBTI（可选）','otherMBTI',state.otherMBTI)}</div>
@@ -397,7 +421,7 @@
     const a=state.analysis;
     const isMe=(name)=>name===a.own;
     const portrait=(name,which,count,qs,avg,mbti)=>`<article class="portrait-card"><div class="portrait-top ${which}"><div class="portrait-avatar" aria-hidden="true">${which==='me'?'🧑🏻‍💻':'🧑🏻‍🎨'}</div><span class="pill" style="position:absolute;bottom:12px;right:17px;background:#ffffffce">${which==='me'?'我的视角':'TA 的视角'}</span></div><div class="portrait-info"><div class="portrait-name"><h2>${esc(name)}</h2><span class="pill ${which==='me'?'purple':'pink'}">${mbti?esc(mbti):'MBTI 未填写'}</span></div><p class="portrait-sub">从当前导入的聊天片段整理</p><div class="metric-row"><span>发送消息</span><b>${count} 条</b></div><div class="metric-row"><span>提问 / 征询</span><b>${qs} 次</b></div><div class="metric-row"><span>平均消息长度</span><b>${avg} 字</b></div><div class="tag-row"><span class="pill ${which==='me'?'purple':'pink'}">${qs>=2?'会主动提问':'表达相对简短'}</span><span class="pill">${avg>=15?'偏详细表达':'轻量交流风格'}</span></div></div></article>`;
-    return workWrap(`${heading('STEP 02 / 04','双向沟通画像','不猜性格、不贴标签，只看看你们在这段聊天里如何表达。')}
+    return workWrap(`${heading('STEP 02 / 05','双向沟通画像','不猜性格、不贴标签，只看看你们在这段聊天里如何表达。')}
       <div class="result-banner" style="margin-bottom:19px"><div><div class="main">两个人，两个视角，一段正在发生的故事。</div><p>已解析 ${a.total} 条消息（双方 ${a.knownTotal} 条${a.unknown.length?`，未知发送者 ${a.unknown.length} 条`:''}）· 不用未知消息推断任何一方。</p></div><span class="heart-sticker">♡</span></div>
       <div class="portrait-grid">${portrait(a.own,'me',a.self.length,a.qMe,a.avgMe,state.ownMBTI)}${portrait(a.other,'them',a.ta.length,a.qTa,a.avgTa,state.otherMBTI)}</div>
       <div class="insight-strip" style="margin-top:19px"><span style="font-size:22px">💡</span><div><strong>子乔观察：</strong> 在这段样本中，你贡献了 ${a.self.length} 条消息，TA 贡献了 ${a.ta.length} 条。TA 发起了 ${a.qTa} 次提问或征询。<br/>这些可以用于理解交流节奏，但不能单独证明喜欢、冷淡或任何人格类型。</div></div>
@@ -411,7 +435,7 @@
     const selfItems=Array.isArray(group.self_portrait)?group.self_portrait:[];
     const otherItems=Array.isArray(group.other_portrait)?group.other_portrait:[];
     const assessment=report.relationship_assessment;
-    return workWrap(`${heading('STEP 02 / 04','双向沟通画像','由 Agent 根据聊天证据整理；数据不足的维度会明确标注。')}
+    return workWrap(`${heading('STEP 02 / 05','双向沟通画像','由 Agent 根据聊天证据整理；数据不足的维度会明确标注。')}
       <div class="result-banner" style="margin-bottom:19px"><div><div class="main">这份画像只描述本次样本中的沟通表现。</div><p>共 ${Number(stats.total??(selfCount+otherCount+unknownCount))} 条消息（本人 ${selfCount} · TA ${otherCount} · 未知 ${unknownCount}）。</p></div><span class="heart-sticker">♡</span></div>
       <div class="portrait-grid">${renderCard(state.ownName||'我','me',selfItems)}${renderCard(state.otherName||'TA','them',otherItems)}</div>
       ${assessment?`<div class="insight-strip" style="margin-top:19px"><span style="font-size:22px">💡</span><div><strong>关系观察：${esc(assessment.stage||'信息不足')}</strong><br/>${esc(assessment.summary||'暂无综合判断。')}<p class="helper">判断置信度：${esc(assessment.confidence||'low')}。仍需结合现实交流。</p></div></div>`:''}
@@ -446,12 +470,12 @@
     const boundaryAlert=isReal?sig.some(x=>x.type==='red'):(state.analysis.boundaryMsgs?.length||sig.some(x=>x.type==='red'));
     const semanticNote=d.semanticDetection?.note||'';
     const relation=d.relationshipAssessment;
-    return workWrap(`${heading('STEP 03 / 04','关系信号气象站','整理你们的互动结构，积极信号与不确定因素都放在桌面上。')}
+    return workWrap(`${heading('STEP 03 / 05','关系信号气象站','整理你们的互动结构，积极信号与不确定因素都放在桌面上。')}
       ${boundaryAlert?`<div class="info-note red" style="margin-bottom:17px"><span class="note-icon">${ic('alert',18)}</span><span><strong>边界提醒 / 需要留意的互动信号：</strong>请结合原文与替代解释理解，不要将单条信号直接等同于关系结论。</span></div>`:''}
       ${isReal&&d.status==='partial'?`<div class="info-note" style="margin-bottom:17px"><span class="note-icon">${ic('alert',18)}</span><span><strong>部分分析：</strong>${(d.limitations||[]).map(esc).join('；')||'部分字段暂不可用。'}</span></div>`:''}
-      <div class="signal-detail-grid"><div class="stack"><div class="panel"><div class="panel-header"><h2>互动信号参考指数</h2><span class="pill pink">${isReal?'真实 Agent 数据':'演示/本地数据'}</span></div><div class="circle-block"><div class="score-ring" style="--score:${d.score==null?0:d.score}"><div class="score-center"><b>${scoreText}</b><small>/100</small><span>互动信号指数</span></div></div><div class="ring-label">${isReal?'后端提供的互动参考指标':'虚构演示指标 / 浏览器本地启发式计算'}<br/><strong>不是好感概率 / 心理测量结果</strong></div></div><div class="tiny-metrics"><div class="tiny-metric"><b>${d.summary.total}</b><span>总消息数</span></div><div class="tiny-metric"><b>${pctText(d.summary.otherShare)}</b><span>TA 消息占比</span></div><div class="tiny-metric"><b>${pctText(d.summary.otherQuestionRatio==null?null:d.summary.otherQuestionRatio*100)}</b><span>TA 提问占比</span></div></div></div>
+      <div class="signal-detail-grid"><div class="stack"><div class="panel"><div class="panel-header"><h2>互动信号参考指数</h2><span class="pill pink">${isReal?(modelConnectionKind()==='substitute'?'模拟后端返回':'后端 API 返回'):'演示/本地数据'}</span></div><div class="circle-block"><div class="score-ring" style="--score:${d.score==null?0:d.score}"><div class="score-center"><b>${scoreText}</b><small>/100</small><span>互动信号指数</span></div></div><div class="ring-label">${isReal?(modelConnectionKind()==='substitute'?'模拟后端提供的测试指标':'后端返回的互动参考指标（模型来源待验）'):'虚构演示指标 / 浏览器本地启发式计算'}<br/><strong>不是好感概率 / 心理测量结果</strong></div></div><div class="tiny-metrics"><div class="tiny-metric"><b>${d.summary.total}</b><span>总消息数</span></div><div class="tiny-metric"><b>${pctText(d.summary.otherShare)}</b><span>TA 消息占比</span></div><div class="tiny-metric"><b>${pctText(d.summary.otherQuestionRatio==null?null:d.summary.otherQuestionRatio*100)}</b><span>TA 提问占比</span></div></div></div>
         <div class="panel"><div class="panel-header"><h2>聊天量分布</h2><span class="illustration-caption">按日期</span></div>${chart.length?`<div class="heart-chart">${chart.map(c=>`<div class="column" title="${esc(c.label)} · ${c.count} 条"><span style="height:${Math.max(13,Math.round(c.count/max*100))}%"></span></div>`).join('')}</div><div class="chart-labels">${chart.map(c=>`<span>${esc(c.label)}</span>`).join('')}</div>`:'<div class="no-data">暂无可用的时间分布数据。</div>'}<div class="disclaimer" style="margin-top:12px">这张图只显示消息数量，不代表关系升温或降温。</div></div></div>
-        <div class="stack"><div class="panel"><div class="panel-header"><h2>可观察的互动维度</h2><span class="pill">${isReal?'Agent 计算':'Mock / 本地规则'}</span></div>${barsHTML(d.metrics)}<div class="disclaimer">${esc(d.disclaimer||'比例以实际可分析文本为分母；不代表“喜欢程度”。')}</div>${semanticNote?`<div class="disclaimer">语义识别：${esc(semanticNote)}</div>`:''}</div>
+        <div class="stack"><div class="panel"><div class="panel-header"><h2>可观察的互动维度</h2><span class="pill">${isReal?(modelConnectionKind()==='substitute'?'模拟接口数据':'后端分析结果'):'Mock / 本地规则'}</span></div>${barsHTML(d.metrics)}<div class="disclaimer">${esc(d.disclaimer||'比例以实际可分析文本为分母；不代表“喜欢程度”。')}</div>${semanticNote?`<div class="disclaimer">语义识别：${esc(semanticNote)}</div>`:''}</div>
         <div class="panel"><div class="panel-header"><h2>重要信号与原文依据</h2><span class="pill purple">${sig.length} 个观察点</span></div>${sig.length?`<div class="signal-list">${sig.map(s=>`<div class="signal-item"><div class="signal-icon ${s.type==='warn'?'warn':s.type==='red'?'red':''}">${ic(s.type==='good'?'check':'alert',17)}</div><div><strong>${esc(s.title)}</strong><p>${esc(s.desc)}</p>${s.quote?`<div class="quote-box">“${esc(s.quote.slice(0,150))}”</div>`:''}${s.evidenceIds?.length?`<small class="muted">证据消息：${s.evidenceIds.map(esc).join('、')} · 证据强度：${esc(s.evidenceStrength||'未标注')}</small>`:''}</div></div>`).join('')}</div>`:'<div class="no-data">当前没有返回可展示的互动信号，请结合样本限制理解。</div>'}</div>
         ${relation?`<div class="panel"><div class="panel-header"><h2>综合关系观察</h2><span class="pill">${esc(relation.stage||'信息不足')}</span></div><p>${esc(relation.summary||'')}</p>${(relation.supporting_facts||[]).length?`<p><strong>支持事实：</strong>${relation.supporting_facts.map(esc).join('；')}</p>`:''}${(relation.contradicting_facts||[]).length?`<p><strong>需要谨慎：</strong>${relation.contradicting_facts.map(esc).join('；')}</p>`:''}${(relation.neutral_alternatives||[]).length?`<p><strong>其他解释：</strong>${relation.neutral_alternatives.map(esc).join('；')}</p>`:''}</div>`:''}</div></div>
       ${resultStepButtons('portraits','advisor','找子乔聊下一步')}`);
@@ -481,7 +505,7 @@
   }
   function strategyPage() {
     if(!state.analysis)return workWrap(needAnalysis());const a=state.analysis,stop=a.boundaryMsgs.length>0,opts=strategyOptions();
-    return workWrap(`${heading('STEP 04 / 04',stop?'先尊重边界，再谈下一步':'下一步，怎么自然地靠近？','三种沟通方式供你参考。选择适合自己的表达，不照搬也完全可以。')}
+    return workWrap(`${heading('STEP 04 / 05',stop?'先尊重边界，再谈下一步':'下一步，怎么自然地靠近？','三种沟通方式供你参考。选择适合自己的表达，不照搬也完全可以。')}
       <div class="result-banner" style="margin-bottom:19px;background:${stop?'linear-gradient(115deg,#fff0f0,#fff7f2)':'linear-gradient(115deg,#f8eefe,#fff3ef)'}"><div><div class="main">${stop?'子乔提醒：尊重对方的明确意愿。':'子乔的第一条建议：真诚，比套路更重要。'}</div><p>${stop?'不要试图通过话术扭转明确拒绝；停止联系、给彼此空间。':'结合你们刚聊过的话题，给下一步交流留一点轻松的余地。'}</p></div><span class="heart-sticker">${stop?'☁':'✦'}</span></div>
       <div class="layout-2"><div class="panel"><div class="panel-header"><h2>今晚回复灵感</h2><span class="pill purple">${opts.length} 种表达</span></div>${opts.map((o,i)=>`<div class="response-card"><div class="response-head"><span class="pill ${i===0?'pink':i===1?'purple':'green'}">${esc(o.tag)}</span><span style="font-size:11px;color:#a18f9d">${esc(o.tone)}</span></div><p>“${esc(o.text)}”</p><div class="response-foot"><small>${esc(o.desc)}</small><button class="btn btn-sm btn-white" data-action="copy" data-copy-index="${i}">${ic('copy',13)} 复制</button></div></div>`).join('')}<p class="disclaimer">示例文本不保证效果，也不应被用来迫使或诱导对方回应。</p></div>
       <div class="stack"><div class="panel"><div class="panel-header"><h2>你的交流时间线</h2><span class="pill orange">可执行 · 不催促</span></div><div class="timeline" style="grid-template-columns:1fr">${(stop?[
@@ -490,7 +514,10 @@
       ${resultStepButtons('signals','advisor','和子乔继续聊')}`);
   }
   function currentAdvisorOptions() {
-    if(state.mode==='demo')return strategyOptions();
+    if(state.mode==='demo')return state.analysis?strategyOptions():[
+      {tag:'先聊聊',tone:'虚构演示',text:'先告诉我具体发生了什么，我们把事实和猜测分开。',desc:'预设文案，非 AI 生成'},
+      {tag:'轻松问候',tone:'低压力',text:'如果对方最近比较忙，给彼此一点空间也很好。',desc:'不催促、不试探'},
+      {tag:'边界第一',tone:'始终有效',text:'如果对方明确拒绝，请尊重决定并停止推进。',desc:'尊重对方的真实选择'}];
     return (state.advisorSuggestions||[]).slice(0,3).map((text,i)=>({
       tag:['军师建议','沟通建议','边界提醒'][i]||'军师建议',
       tone:'来自 Agent',text:String(text),desc:'根据当前分析与对话生成'
@@ -507,17 +534,18 @@
   function initAdvisor(){
     if(!state.advisorMessages.length){
       const text=state.mode==='real'
-        ?'欢迎来到子乔军师室。你可以直接提出当前问题，我会基于这次已完成的聊天分析回答。'
+        ?(state.analysisId?'欢迎来到子乔军师室。你可以直接提出当前问题，我会基于这次已完成的聊天分析回答。':'欢迎来到子乔军师室。真实模式需要先导入聊天、确认授权并获得 analysis_id；如果只是想体验交流，可以手动切换演示模式。')
         :state.analysis?.boundaryMsgs?.length
           ?'欢迎来到子乔军师室 🌷 我看到聊天里有需要尊重的明确边界。我们可以先聊聊如何平静、体面地处理这段关系。'
-          :'嗨！我是子乔 🌷\n看完你们的互动啦！这里是一个没有套路的军师室。你可以问我「这句话怎么回复？」「要不要邀约？」我会给你尊重双方意愿的建议。\n\n（演示模式：当前为本地预设回复，并非真实大模型。）';
+          :'嗨！我是子乔 🌷\n来聊聊吧！这里是一个没有套路的军师室。你可以问我「这句话怎么回复？」「要不要邀约？」我会给你尊重双方意愿的建议。\n\n（演示模式：当前为本地预设回复，并非真实大模型。）';
       state.advisorMessages=[{from:'bot',text,status:'sent'}];
     }
   }
   function advisorPage(){
-    if(!state.analysis)return workWrap(`${heading('STEP 04 / 04','子乔军师','载入报告后，可继续围绕该报告交流。')}${needAnalysis('sample-advisor')}`);
+    // The chat UI always renders. Demo works without analysis; real API needs analysis_id.
     initAdvisor();
     const opts=currentAdvisorOptions();
+    const needsAnalysis=state.mode==='real'&&!state.analysisId;
     const aside=opts.length?opts.map((o,i)=>`<div class="response-card"><div class="response-head"><span class="pill ${i===0?'pink':i===1?'purple':'green'}">${esc(o.tag)}</span><span class="muted">${esc(o.tone)}</span></div><p>“${esc(o.text)}”</p><div class="response-foot"><small>${esc(o.desc)}</small><button class="btn btn-sm btn-white" data-action="copy" data-copy-index="${i}">${ic('copy',13)} 复制</button></div></div>`).join(''):`<div class="no-data">${state.mode==='real'?'完成一轮军师交流后，针对当前问题的建议会显示在这里。':'暂无建议。'}</div>`;
     const chatItems=state.advisorMessages.map(m=>{
       const evidence=Array.isArray(m.evidence)?m.evidence:[];
@@ -525,13 +553,42 @@
       const boundaryHtml=Array.isArray(m.boundaryNotes)&&m.boundaryNotes.length?`<div class="info-note red"><strong>边界提醒：</strong>${m.boundaryNotes.map(esc).join('；')}</div>`:'';
       return `<div class="chat-msg ${m.from==='me'?'me':'bot'} ${m.status==='failed'?'failed':m.status==='pending'?'pending':''}"><span class="speaker">${m.from==='me'?'🧑🏻‍💻':'👔'}</span><div class="message">${esc(m.text)}${evidenceHtml}${boundaryHtml}${m.status==='failed'?`<button class="retry-chat" data-action="retry-message" data-message-id="${esc(m.id||'')}">发送失败 · 重新发送</button>`:''}</div></div>`;
     }).join('');
-    return workWrap(`${heading('STEP 04 / 04','子乔军师，在线接招','聊聊如何回复、表达心意或自然邀约。子乔的建议以真诚和尊重为前提。',`<button class="btn btn-sm btn-white" data-action="reset-chat">${ic('rotate',14)} 重置对话</button>`)}
-      <div class="v4-advisor-grid"><div class="chat-panel v4-chat-panel"><div class="chat-topbar"><div class="avatar-small avatar-photo"><img src="images/ziqiao-photo.jpeg" alt=""/></div><div><h3>子乔 · AI 恋爱军师</h3><p><span class="online"></span> ${state.mode==='demo'?'演示模式 · 预设回复':state.apiHealth?.status==='ok'?'真实 Agent · 已连接':'真实 Agent · 待连接'}${state.sessionId?' · 会话已关联':''}</p></div><span class="pill purple" style="margin-left:auto">轻松聊 · 不玩套路</span></div>
+    return workWrap(`${heading('STEP 04 / 05','子乔军师，在线接招','聊聊如何回复、表达心意或自然邀约。子乔的建议以真诚和尊重为前提。',`<button class="btn btn-sm btn-white" data-action="reset-chat">${ic('rotate',14)} 重置对话</button>`)}
+      ${needsAnalysis?`<div class="info-note"><span class="note-icon">${ic('alert',18)}</span><span><strong>真实军师尚不能发送：</strong>请先导入 JSON、确认双方身份并完成后端分析，取得 analysis_id。<button class="privacy-link" data-go="import">去导入聊天 →</button> 如只想体验交流，请手动选择演示模式。</span></div>`:!state.analysis?`<div class="info-note"><span class="note-icon">${ic('spark',18)}</span><span><strong>无报告也能体验军师交流：</strong>当前是虚构预设回复，不调用 AI；分析完成后会结合报告提供更有针对性的体验。</span></div>`:''}
+      <div class="v4-advisor-grid"><div class="chat-panel v4-chat-panel"><div class="chat-topbar"><div class="avatar-small avatar-photo"><img src="images/ziqiao-photo.jpeg" alt=""/></div><div><h3>子乔 · AI 恋爱军师</h3><p><span class="online"></span> ${state.mode==='demo'?'演示模式 · 预设回复':state.apiHealth?.status==='ok'?(modelConnectionKind()==='substitute'?'模拟后端 · 非真实 AI':'后端已连接 · 模型待验'):'真实后端 · 待连接'}${state.sessionId?' · 会话已关联':''}</p></div><span class="pill purple" style="margin-left:auto">轻松聊 · 不玩套路</span></div>
       <div class="chat-scroll" id="chatScroll">${chatItems}${state.advisorBusy?`<div class="mode-status-line" role="status">军师正在回复…</div>`:''}${state.advisorError?`<div class="mode-error" role="alert">${esc(state.advisorError)} <button data-action="mode-demo">手动切换演示模式</button></div>`:''}</div>
       ${state.mode==='real'?advisorSettingsHTML():''}
-      <div class="chat-composer"><div class="quick-questions"><button data-action="ask" data-query="TA 很久没回消息，我该怎么办？">TA 很久没回？</button><button data-action="ask" data-query="我想自然地邀请 TA 见面">怎么自然邀约？</button><button data-action="ask" data-query="如何判断对方是否愿意继续聊天？">怎么看互动信号？</button></div><div class="composer-row"><input id="advisorInput" class="composer-input" placeholder="把你的恋爱难题交给子乔…" maxlength="2000" value="${esc(state.advisorInput)}"/><button class="send-btn" data-action="send" aria-label="发送消息" ${state.advisorBusy?'disabled':''}>${ic('send',19)}</button></div><div class="disclaimer">${state.mode==='demo'?'演示模式：本地预设回复，不是 AI 生成。':'真实模式：问题将发送到团队后端；联网搜索默认关闭，模型密钥保存在服务端。'}</div></div></div>
+      <div class="chat-composer"><div class="quick-questions"><button data-action="ask" data-query="TA 很久没回消息，我该怎么办？">TA 很久没回？</button><button data-action="ask" data-query="我想自然地邀请 TA 见面">怎么自然邀约？</button><button data-action="ask" data-query="如何判断对方是否愿意继续聊天？">怎么看互动信号？</button></div><div class="composer-row"><input id="advisorInput" class="composer-input" placeholder="把你的恋爱难题交给子乔…" maxlength="2000" value="${esc(state.advisorInput)}"/><button class="send-btn" data-action="send" aria-label="发送消息" ${state.advisorBusy||needsAnalysis?'disabled':''}>${ic('send',19)}</button></div><div class="disclaimer">${state.mode==='demo'?'演示模式：本地预设回复，不是 AI 生成。':needsAnalysis?'真实模式需要先完成分析才能发问；不会发送未授权聊天。':modelConnectionKind()==='substitute'?'本地模拟后端返回，不是实际 AI 推理。':'后端模式：问题发送到团队后端；模型来源须结合服务端日志验证。'}</div></div></div>
       <aside class="v4-advisor-aside"><div class="v4-advisor-head"><span>YOUR AI WINGMAN</span><h2>子乔的<br/><em>聊天锦囊</em></h2><p>“人生没有彩排，每一天都是现场直播。”</p></div><div class="panel"><div class="panel-header"><h2>给你的下一步建议</h2><span class="pill pink">${opts.length} 条</span></div>${aside}</div></aside></div>
+      <div class="report-next-action"><button class="btn btn-primary" data-go="report">整理我们的关系报告 ${ic('arrow',16)}</button></div>
       <div class="v4-pet" aria-label="子乔桌宠风格形象"><img src="images/ziqiao-cutout.png" alt="子乔桌宠"/><span class="v4-pet-speech">有问题，尽管问我！<small>子乔 · 军师在线</small></span></div>`);
+  }
+  // P0-4: client-side compilation of already available evidence; NOT an Agent 3 inference.
+  function reportPage() {
+    if(!state.analysis)return workWrap(`${heading('STEP 05 / 05','我们的关系观察手账','将已有分析整理成可保存的摘要，不凭空生成新的关系结论。')}${needAnalysis('sample-report')}`);
+    const d=currentDashboard();
+    const real=state.mode==='real';
+    const r=real?(state.report||{}):{};
+    const a=state.analysis;
+    const t=real?'后端报告摘要 · 本页为整理排版':'演示报告 · 虚构样例或本地规则';
+    const profile=state.profileSaved?state.profile:null;
+    const events=profile?.eventItems?.filter(x=>x&&String(x.text||'').trim())||[];
+    const relation=real?r.relationship_assessment:null;
+    const summary=relation?.summary||(!real?'以下仅复述当前对话中可观察的互动指标，不代表 TA 的真实感受。':'后端未返回综合关系摘要；本页不自行推断。');
+    const realSelf=Array.isArray(r.portraits?.self_portrait)?r.portraits.self_portrait:[];
+    const realOther=Array.isArray(r.portraits?.other_portrait)?r.portraits.other_portrait:[];
+    const portraitText=(items,fallback)=>items.length?items.slice(0,4).map(x=>`<p><strong>${esc(x.label||x.key||'沟通维度')}：</strong>${esc(x.level||'数据不足')} · ${esc(x.detail||'无更多依据')}</p>`).join(''):`<p>${esc(fallback)}</p>`;
+    const signals=(d?.signals||[]).slice(0,6);
+    const messageReplies=state.advisorMessages.filter((x,i)=>x.from==='bot'&&i>0&&x.status==='sent').slice(-3);
+    const txt=(value,fallback='尚未提供')=>esc(String(value||fallback));
+    return workWrap(`${heading('STEP 05 / 05','我们的关系观察手账','把已经得到的画像、互动证据与军师建议整理在一起，保存这一刻的观察。',`<button class="btn btn-sm btn-white" data-action="print-report">${ic('book',14)} 打印 / 保存为 PDF</button>`)}
+      <div class="report-intro" id="printableReport"><div class="report-cover"><span class="report-kicker">HEART SIGNAL · RELATIONSHIP JOURNAL</span><h2>你和 TA 的沟通观察</h2><p>${esc(t)} · ${real&&state.analysisId?'本次报告已关联 analysis_id':'未连接 Agent 3 叙事服务'}</p><div class="report-heart">♡</div><small>仅供交流反思，不是好感概率、心理诊断或对方真实意愿的证明。</small></div>
+      <section class="panel report-section"><h2>01 · 我们的故事背景</h2><p>你们如何认识：${txt(profile?.relation)} · 当前阶段：${txt(profile?.stage)} · 联系频率：${txt(profile?.frequency)}</p>${events.length?`<div class="report-timeline">${events.map(x=>`<div><b>${txt(x.date,'时间未注明')}</b><span>${esc(x.text)}</span></div>`).join('')}</div>`:'<p class="muted">尚未在人物档案中记录共同事件；不会自行编造相识过程。</p>'}<small>本节背景来自用户自填，并非聊天内容自动验证的事实。</small></section>
+      <section class="panel report-section"><h2>02 · 双方沟通画像</h2><div class="report-two"><div><h3>${txt(real?state.ownName:a.own,'我')}</h3>${real?portraitText(realSelf,'后端没有足够的本人画像数据。'):`<p>本地规则统计：${a.self?.length??0} 条消息，提问 ${a.qMe??0} 次。</p>`}</div><div><h3>${txt(real?state.otherName:a.other,'TA')}</h3>${real?portraitText(realOther,'后端没有足够的 TA 画像数据。'):`<p>本地规则统计：${a.ta?.length??0} 条消息，提问 ${a.qTa??0} 次。</p>`}</div></div></section>
+      <section class="panel report-section"><h2>03 · 互动指标与原文证据</h2><p><strong>互动参考指数：</strong>${d?.score==null?'数据不足':`${Math.round(d.score)}/100`} · <strong>消息总数：</strong>${d?.summary?.total??0}</p><div class="report-metrics">${(d?.metrics||[]).map(x=>`<div><span>${esc(x.name)}</span><strong>${x.val==null?'数据不足':`${Math.round(x.val)}%`}</strong></div>`).join('')}</div>${signals.length?signals.map(x=>`<div class="report-signal"><b>${esc(x.title)}</b><p>${esc(x.desc)}</p>${x.quote?`<blockquote>“${esc(x.quote.slice(0,240))}”</blockquote>`:''}${x.evidenceIds?.length?`<small>对应消息：${x.evidenceIds.map(esc).join('、')}</small>`:''}</div>`).join(''):'<p>没有足够的信号证据。</p>'}</section>
+      <section class="panel report-section"><h2>04 · 关系观察与下一步</h2><p>${esc(summary)}</p>${relation?.neutral_alternatives?.length?`<p><strong>其他可能解释：</strong>${relation.neutral_alternatives.map(esc).join('；')}</p>`:''}${messageReplies.length?`<div class="report-suggestions">${messageReplies.map(x=>`<p>${esc(x.text.slice(0,900))}</p>`).join('')}</div>`:`<div class="report-suggestions"><p>尚无本次军师交流回复。可先进入军师聊天室提问，再返回生成报告。</p><button class="btn btn-sm btn-white" data-go="advisor">进入军师交流 ${ic('arrow',13)}</button></div>`}<p class="disclaimer">任何明确拒绝、需要空间或个人边界，优先于“好感信号”。</p></section>
+      <div class="report-footer-note"><strong>报告来源与限制</strong><p>${esc(t)}。本页仅整理已经存在的档案、指标、证据及军师回复，没有调用 Agent 3，也未新增后端接口。${real?'模型真实推理仍需由后端日志验收。':'演示数据不用于判断真实人物。'}</p><p>若希望保存本页，可使用浏览器“打印 → 保存为 PDF”。请妥善保存含有私人对话的文件。</p></div></div>
+      ${resultStepButtons('advisor','import','重新导入聊天')}`);
   }
   function botReply(text) {
     const a=state.analysis;
@@ -559,7 +616,7 @@
   }
   function render(){
     const view=state.view;
-    const html= view==='home'?home():view==='auth'?authPage():view==='profile'?profilePage():view==='import'?importPage():view==='portraits'?portraitsPage():view==='signals'?signalsPage():advisorPage();
+    const html= view==='home'?home():view==='auth'?authPage():view==='profile'?profilePage():view==='import'?importPage():view==='portraits'?portraitsPage():view==='signals'?signalsPage():view==='advisor'?advisorPage():reportPage();
     const preview=window.HeartSignalAPIConfig?.localIntegrationPreview
       ? '<aside class="integration-preview" role="note"><strong>本地集成预览</strong> · API 地址已配置为 http://127.0.0.1:8789。模型回复为模拟。进入聊天导入后，选择「真实 API」测试接口。</aside>'
       : '';
@@ -584,7 +641,7 @@
   function loadMock(key='warm',view='portraits') {
     const fixture=window.HeartSignalMockData&&window.HeartSignalMockData[key];
     if(!fixture){toast('未找到该虚构样例');return;}
-    state.mode='demo';resetPhaseAnalysis();state.mockKey=key;state.report=null;state.advisorSuggestions=[];state.advisorBoundaryNotes=[];
+    state.apiHealthRunToken++;state.apiHealthLoading=false;state.mode='demo';resetPhaseAnalysis();state.mockKey=key;state.report=null;state.advisorSuggestions=[];state.advisorBoundaryNotes=[];
     state.identityConfirmed=false;state.sendConsent=false;state.demo=true;
     state.analysis=analyze(parseChatInput(JSON.stringify(fixture.chat),true).messages);
     state.dashboard=HeartSignalDashboard.normalize(fixture.dashboard);
@@ -592,16 +649,18 @@
   }
   function loadSample(){loadMock('warm');}
   async function checkApiHealth() {
+    const token=++state.apiHealthRunToken;
     state.apiHealthLoading=true;state.apiHealthError='';state.apiHealth=null;render();
     try {
       const health=await window.HeartSignalAPI.health();
+      if(token!==state.apiHealthRunToken||state.mode!=='real')return;
       if(!health||health.status!=='ok')throw new Error('健康检查未返回 status=ok');
       state.apiHealth=health;
       if(!health.features?.thinking_supported)state.thinkingLevel='auto';
       if(!health.features?.web_search?.supported)state.webSearch=false;
     } catch(err) {
-      state.apiHealthError=err.message||'后端健康检查失败';
-    } finally {state.apiHealthLoading=false;render();}
+      if(token===state.apiHealthRunToken&&state.mode==='real')state.apiHealthError=err.message||'后端健康检查失败';
+    } finally {if(token===state.apiHealthRunToken&&state.mode==='real'){state.apiHealthLoading=false;render();}}
   }
   function apiFeatureSupportsThinking() {return state.apiHealth?.features?.thinking_supported===true;}
   function apiFeatureSupportsSearch() {return state.apiHealth?.features?.web_search?.supported===true;}
@@ -638,11 +697,12 @@
       if(!result||typeof result.analysisId!=='string'||!result.analysisId.trim())throw new Error('接口响应缺少有效 analysis_id');
       const dashboard=HeartSignalDashboard.normalize(result.dashboard);
       state.analysisId=result.analysisId;state.clientId=result.clientId||state.clientId;state.sessionId=null;
+      state.chatRunToken++;state.advisorBusy=false;state.advisorError='';state.advisorInput='';
       state.report=result.report;
       state.analysis={source:'agent-api',total:dashboard.summary.total};
       state.dashboard=dashboard;state.advisorSuggestions=result.suggestions||[];state.advisorBoundaryNotes=[];state.demo=false;state.advisorMessages=[];
       navigate('signals');
-      toast(result.status==='partial'?'真实分析已返回，但部分内容受样本限制。':'真实 Agent 分析完成。');
+      toast(modelConnectionKind()==='substitute'?'模拟后端接口返回成功；不是实际 AI 推理。':result.status==='partial'?'后端返回部分分析结果；请查看样本限制。':'后端已返回分析结果；实际模型来源请结合服务端日志核验。');
     }catch(err){if(token===state.analysisRunToken)state.apiError=`分析调用失败：${err.message||'未知异常'}。不会自动切换演示模式。`;}
     finally{if(token===state.analysisRunToken){state.apiBusy=false;render();}}
   }
@@ -651,6 +711,7 @@
     if(state.advisorBusy)return;
     const q=(query??$('advisorInput')?.value??'').trim().slice(0,2000);
     if(!q)return;
+    if(state.mode==='real'&&!state.analysisId){state.advisorError='真实军师需要先完成聊天分析并获取 analysis_id；可手动切换演示模式。';render();return;}
     if(query===undefined)state.advisorInput='';
     state.advisorError='';
     let outgoing;
@@ -718,11 +779,12 @@
     else if(el.dataset.profileChoice){const k=el.dataset.profileChoice, v=el.dataset.value;state.profile[k]=state.profile[k]===v?'':v;document.querySelectorAll('[data-profile-choice="'+k+'"]').forEach(b=>{const active=b.dataset.value===state.profile[k];b.classList.toggle('is-selected',active);b.setAttribute('aria-pressed',String(active));const svg=b.querySelector('svg');if(svg)svg.remove();if(active)b.insertAdjacentHTML('afterbegin',ic('check',14));});}
     else if(el.dataset.trait){const key=el.dataset.trait, val=el.dataset.value, arr=state.profile[key]||[];state.profile[key]=arr.includes(val)?arr.filter(x=>x!==val):[...arr,val];el.classList.toggle('active');}
     else if(el.dataset.goal){state.profile.goal=el.dataset.goal;document.querySelectorAll('[data-goal]').forEach(b=>b.classList.toggle('active',b.dataset.goal===state.profile.goal));}
+    else if(act==='print-report'){if(state.view==='report')window.print();}
     else if(act==='sample')loadSample();
-    else if(act==='sample-advisor')loadMock('warm','advisor');
-    else if(act==='mode-demo'){state.analysisRunToken++;state.chatRunToken++;state.mode='demo';state.apiError='';state.advisorError='';state.advisorBusy=false;state.apiBusy=false;state.analysisId=null;state.sessionId=null;state.report=null;state.advisorSuggestions=[];state.advisorBoundaryNotes=[];if(state.messages.length){state.analysis=analyze(state.messages);state.dashboard=state.mockKey&&window.HeartSignalMockData?.[state.mockKey]?HeartSignalDashboard.normalize(HeartSignalMockData[state.mockKey].dashboard):HeartSignalDashboard.localFromAnalysis(state.analysis,signalData());}else{state.analysis=null;state.dashboard=null;}state.advisorMessages=[];render();toast('已手动切换演示模式 · 不会调用后端');}
+    else if(act==='sample-report')loadMock('warm','report');
+    else if(act==='mode-demo'){state.apiHealthRunToken++;state.apiHealthLoading=false;state.analysisRunToken++;state.chatRunToken++;state.mode='demo';state.apiError='';state.advisorError='';state.advisorBusy=false;state.apiBusy=false;state.analysisId=null;state.sessionId=null;state.report=null;state.advisorSuggestions=[];state.advisorBoundaryNotes=[];if(state.messages.length){state.analysis=analyze(state.messages);state.dashboard=state.mockKey&&window.HeartSignalMockData?.[state.mockKey]?HeartSignalDashboard.normalize(HeartSignalMockData[state.mockKey].dashboard):HeartSignalDashboard.localFromAnalysis(state.analysis,signalData());}else{state.analysis=null;state.dashboard=null;}state.advisorMessages=[];render();toast('已手动切换演示模式 · 不会调用后端');}
     else if(act==='check-health'){checkApiHealth();}
-    else if(act==='mode-real'){state.analysisRunToken++;state.chatRunToken++;state.mode='real';state.apiError='';state.advisorError='';state.dashboard=null;state.report=null;state.analysis=null;state.analysisId=null;state.sessionId=null;state.advisorSuggestions=[];state.advisorBoundaryNotes=[];state.advisorMessages=[];state.identityConfirmed=false;state.sendConsent=false;render();toast(window.HeartSignalAPIConfig?.localIntegrationPreview?'已选本地 API，请核对身份并授权发送':'已切换真实模式，请核对身份并授权发送');checkApiHealth();}
+    else if(act==='mode-real'){state.apiHealthRunToken++;state.analysisRunToken++;state.chatRunToken++;state.mode='real';state.apiError='';state.advisorError='';state.dashboard=null;state.report=null;state.analysis=null;state.analysisId=null;state.sessionId=null;state.advisorSuggestions=[];state.advisorBoundaryNotes=[];state.advisorMessages=[];state.identityConfirmed=false;state.sendConsent=false;render();toast(window.HeartSignalAPIConfig?.localIntegrationPreview?'已选本地 API，请核对身份并授权发送':'已切换真实模式，请核对身份并授权发送');checkApiHealth();}
     else if(act==='mock-warm')loadMock('warm');
     else if(act==='mock-reserved')loadMock('reserved');
     else if(act==='retry-message'){const m=state.advisorMessages.find(x=>x.id===el.dataset.messageId);if(m&&m.status==='failed')sendAdvisor(m.text,m.id);}
@@ -791,6 +853,6 @@
     }
   },{passive:true});
   const initial=location.hash.slice(1);
-  state.view=['home','import','auth','advisor'].includes(initial)?initial:'home';
+  state.view=['home','import','auth','advisor','report'].includes(initial)?initial:'home';
   render();
 })();

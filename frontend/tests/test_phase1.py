@@ -8,7 +8,7 @@ ROOT=Path(__file__).resolve().parents[1]
 def run():
     results=[];errors=[]
     with sync_playwright() as p:
-        browser=p.chromium.launch(headless=True,executable_path=os.environ.get('CHROMIUM_PATH','/usr/bin/chromium'),args=['--no-sandbox','--disable-dev-shm-usage','--disable-gpu'])
+        browser=p.chromium.launch(headless=True,executable_path=os.environ.get('CHROMIUM_PATH'),args=['--no-sandbox','--disable-dev-shm-usage','--disable-gpu'])
         page=browser.new_page(viewport={'width':1440,'height':900})
         page.on('pageerror',lambda e:errors.append(str(e)))
         styles='\n'.join((ROOT/f).read_text('utf8') for f in ['styles.css','refinement.css','wizard.css','phase1.css'])
@@ -16,11 +16,11 @@ def run():
         html='<html lang=\"zh-CN\"><head><meta charset=\"UTF-8\"><style>'+styles+'</style></head><body><div class=\"background-blobs\"></div><div id=\"app\"></div><div id=\"toast\" class=\"toast\"></div>'+scripts+'</body></html>'
         page.set_content(html,wait_until='load',timeout=35000)
         assert page.locator('.v4-home').count()==1
-        assert page.locator('nav [data-go="profile"]').count()==1
+        assert page.locator('nav.nav-links [data-go="profile"]').count()==1
         results.append('V6 首页/导航/档案未退化')
-        page.locator('nav [data-go="import"]').click()
+        page.locator('nav.nav-links [data-go="import"]').click()
         assert page.locator('#chatInput').count()==1
-        standard=json.loads((ROOT/'tests/fixtures/chat-schema1-standard.json').read_text())
+        standard=json.loads((ROOT/'tests/fixtures/chat-schema1-standard.json').read_text(encoding='utf-8'))
         standard['messages'][0]['sender_name']='虚构的我'; standard['messages'][1]['sender_name']='虚构的TA'
         standard['metadata']['anonymized']=True
         page.locator('#chatInput').fill(json.dumps(standard,ensure_ascii=False))
@@ -45,18 +45,18 @@ def run():
         page.locator('#consent').check()
         page.locator('[data-action="analyze"]').click()
         assert page.locator('.portrait-grid').count()==1
-        page.locator('nav [data-go="signals"]').click()
+        page.locator('nav.nav-links [data-go="signals"]').click()
         assert page.locator('.score-ring').count()==1
         before=page.locator('.score-center b').inner_text()
         page.locator('[data-action="mock-reserved"]').click()
         assert page.locator('.portrait-grid').count()==1
-        page.locator('nav [data-go="signals"]').click()
+        page.locator('nav.nav-links [data-go="signals"]').click()
         after=page.locator('.score-center b').inner_text()
         assert before != after, (before,after)
         assert '24' in after
         assert '边界提醒' in page.locator('.signal-detail-grid').inner_text() or '边界' in page.locator('.info-note.red').inner_text()
         results.append(f'不同 Mock 场景图表动态变化：{before}→{after}')
-        page.locator('nav [data-go="advisor"]').click()
+        page.locator('nav.nav-links [data-go="advisor"]').click()
         assert page.locator('.v4-chat-panel').count()==1
         page.locator('[data-action="ask"]').first.click()
         assert page.locator('.chat-msg.me').count()==1
@@ -70,7 +70,7 @@ def run():
         # switch to real, consent + identities are mandatory
         page.locator('[data-action="mode-real"]').click()
         assert '真实 API' in page.locator('.mode-strip').inner_text()
-        page.locator('nav [data-go="import"]').click()
+        page.locator('nav.nav-links [data-go="import"]').click()
         assert page.locator('#identityConfirmed').count()==1
         assert page.locator('#sendConsent').count()==1
         page.locator('#fileInput').set_input_files(str(ROOT/'mocks/warm-chat.json'))
@@ -97,7 +97,7 @@ def run():
         page.locator('.mode-error [data-action="mode-demo"]').first.click()
         assert '演示模式' in page.locator('.mode-strip').inner_text()
         page.locator('[data-action="mock-warm"]').click()
-        page.locator('nav [data-go="advisor"]').click()
+        page.locator('nav.nav-links [data-go="advisor"]').click()
         page.locator('[data-action="send"]').click() if False else None
         assert page.locator('.v4-chat-panel').count()==1
         results.append('后端断网显式报错；用户手动切演示后恢复完整军师')

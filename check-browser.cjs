@@ -17,7 +17,7 @@ const { chromium } = require(process.env.PLAYWRIGHT_MODULE || 'playwright');
     assert.equal((await page.goto('http://127.0.0.1:8789/')).status(), 200);
     await nav('import').click();
     await page.locator('[data-action="mode-real"]').first().click();
-    await page.getByText('后端健康检查通过', { exact: false }).first().waitFor();
+    await page.getByText('已连接本地模拟后端', { exact: false }).first().waitFor();
     await page.locator('#fileInput').setInputFiles(path.join(__dirname, 'backend/tests/fixtures/fictional_chat.json'));
     await page.locator('#previewCount').filter({ hasText: '12 条消息' }).waitFor();
     for (const id of ['consent', 'identityConfirmed', 'sendConsent']) await page.locator('#' + id).check();

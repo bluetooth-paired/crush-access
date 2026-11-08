@@ -30,7 +30,7 @@ def run() -> None:
     results: list[str] = []
     errors: list[str] = []
     with sync_playwright() as p:
-        chromium_path = os.environ.get('CHROMIUM_PATH', '/usr/bin/chromium')
+        chromium_path = os.environ.get('CHROMIUM_PATH')
         browser = p.chromium.launch(
             headless=True, executable_path=chromium_path,
             args=['--no-sandbox', '--disable-dev-shm-usage', '--disable-gpu']
@@ -39,7 +39,7 @@ def run() -> None:
         page.on('pageerror', lambda err: errors.append(str(err)))
         page.set_content(build_inline_html(), wait_until='load', timeout=30000)
         assert page.locator('.v4-home').count() == 1, 'Original V6 home must still render'
-        page.locator('nav [data-go="import"]').first.click()
+        page.locator('nav.nav-links [data-go="import"]').first.click()
         assert page.locator('#chatInput').count() == 1
         results.append('首页及原聊天导入模块保留')
 
@@ -69,7 +69,7 @@ def run() -> None:
         page.locator('[data-action="analyze"]').click()
         assert page.locator('.portrait-grid').count() == 1
         assert '2 条消息' in page.locator('.result-banner').inner_text()
-        page.locator('nav [data-go="import"]').first.click()
+        page.locator('nav.nav-links [data-go="import"]').first.click()
         results.append('只有两条标准 JSON（self/other 各一条）仍能传入画像页面')
 
         # JSON file upload after navigating home and back.
@@ -95,9 +95,9 @@ def run() -> None:
         assert page.locator('.portrait-grid').count() == 1, 'should navigate to portraits'
         port_text = page.locator('.result-banner').inner_text()
         assert '5 条消息' in port_text and '双方 4 条' in port_text and '未知发送者 1 条' in port_text
-        page.locator('nav [data-go="signals"]').first.click()
+        page.locator('nav.nav-links [data-go="signals"]').first.click()
         assert '5' in page.locator('.tiny-metrics').inner_text()
-        page.locator('nav [data-go="advisor"]').first.click()
+        page.locator('nav.nav-links [data-go="advisor"]').first.click()
         assert page.locator('#advisorInput').count() == 1
         page.locator('#advisorInput').fill('这周可以一起看展吗？')
         page.locator('[data-action="send"]').click()
@@ -106,7 +106,7 @@ def run() -> None:
         results.append('双向画像/互动信号/军师对话：共用标准化数据并保持正常运行')
 
         # Go back to input for invalid/malformed tests.
-        page.locator('nav [data-go="import"]').first.click()
+        page.locator('nav.nav-links [data-go="import"]').first.click()
         page.locator('#fileInput').set_input_files(str(FX/'chat-schema1-metadata-mismatch.json'))
         page.wait_for_function("() => document.querySelector('#parseStatus')?.textContent.includes('metadata.total_messages 为 999')")
         assert '共 5 条' in page.locator('#parseStatus').inner_text()
@@ -143,7 +143,7 @@ def run() -> None:
         page.locator('#consent').check()
         page.locator('[data-action="analyze"]').click()
         assert page.locator('.portrait-grid').count() == 1
-        page.locator('nav [data-go="import"]').first.click()
+        page.locator('nav.nav-links [data-go="import"]').first.click()
         accept = page.locator('#fileInput').get_attribute('accept') or ''
         assert '.json' in accept and '.txt' in accept and '.csv' in accept and '.md' not in accept
         results.append('纯文本粘贴/文本文件原有分析闭环保留；.md 不列入上传格式')
