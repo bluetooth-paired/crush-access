@@ -42,7 +42,7 @@ def run():
     }
     advisor_turn=0
     with sync_playwright() as p:
-      browser=p.chromium.launch(headless=True,executable_path=os.environ.get('CHROMIUM_PATH','/usr/bin/chromium'),args=['--no-sandbox','--disable-dev-shm-usage','--disable-gpu'])
+      browser=p.chromium.launch(headless=True,executable_path=os.environ.get('CHROMIUM_PATH'),args=['--no-sandbox','--disable-dev-shm-usage','--disable-gpu'])
       page=browser.new_page(viewport={'width':1440,'height':1000})
       page.on('pageerror',lambda e:errors.append(str(e)))
       def route_handler(route):
@@ -66,9 +66,9 @@ def run():
       page.route('https://api.test/**',route_handler)
       page.set_content(build_html(),wait_until='load',timeout=30000)
       page.evaluate("window.HeartSignalAPIConfig={baseUrl:'https://api.test',enabled:true,timeoutMs:5000}")
-      page.locator('nav [data-go="import"]').first.click()
+      page.locator('nav.nav-links [data-go="import"]').first.click()
       page.locator('[data-action="mode-real"]').click()
-      page.locator('.mode-strip').get_by_text('后端健康检查通过',exact=False).wait_for(timeout=5000)
+      page.locator('.mode-strip').get_by_text('已连接本地模拟后端',exact=False).wait_for(timeout=5000)
       page.locator('#fileInput').set_input_files(str(FX/'chat-schema1-naive-time.json'))
       page.locator('#parseStatus').get_by_text('解析成功：共 2 条',exact=False).wait_for(timeout=5000)
       assert '2026-11-06 22:39' in page.locator('#previewMessages').inner_text()
@@ -87,10 +87,10 @@ def run():
       assert '双方共同活动表达占比' in page.locator('.signal-detail-grid').inner_text()
       assert '数据不足' in page.locator('.signal-detail-grid').inner_text()
       assert '25%' in page.locator('.tiny-metrics').inner_text()
-      page.locator('nav [data-go="portraits"]').first.click()
+      page.locator('nav.nav-links [data-go="portraits"]').first.click()
       assert 'Agent 交流画像' in page.locator('.portrait-grid').inner_text()
       assert '样本较短' in page.locator('.portrait-grid').inner_text()
-      page.locator('nav [data-go="advisor"]').first.click()
+      page.locator('nav.nav-links [data-go="advisor"]').first.click()
       page.locator('#thinkingLevel').select_option('high')
       page.locator('#webSearch').check()
       page.locator('#advisorInput').fill('第一轮：下一步怎么做？')

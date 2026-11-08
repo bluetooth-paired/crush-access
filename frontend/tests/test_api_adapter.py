@@ -13,11 +13,11 @@ def make_page(page):
 def test():
     errors=[];out=[]
     with sync_playwright() as p:
-        b=p.chromium.launch(headless=True,executable_path=os.environ.get('CHROMIUM_PATH','/usr/bin/chromium'),args=['--no-sandbox','--disable-dev-shm-usage','--disable-gpu'])
+        b=p.chromium.launch(headless=True,executable_path=os.environ.get('CHROMIUM_PATH'),args=['--no-sandbox','--disable-dev-shm-usage','--disable-gpu'])
         page=b.new_page(viewport={'width':1440,'height':900})
         page.on('pageerror',lambda e:errors.append(str(e)))
         make_page(page)
-        page.locator('nav [data-go="import"]').click()
+        page.locator('nav.nav-links [data-go="import"]').click()
         page.locator('[data-action="mode-real"]').click()
         page.locator('#fileInput').set_input_files(str(ROOT/'mocks/warm-chat.json'))
         page.locator('#previewCount').get_by_text('14 条消息').wait_for(timeout=5000)
@@ -43,7 +43,7 @@ def test():
         page.locator('.score-center b').get_by_text('74').wait_for(timeout=5000)
         assert page.locator('.score-ring').count()==1
         out.append('模拟适配器成功处理分析响应，动态指数 74')
-        page.locator('nav [data-go="advisor"]').click()
+        page.locator('nav.nav-links [data-go="advisor"]').click()
         page.locator('#advisorInput').fill('第一轮：如何邀约')
         page.locator('[data-action="send"]').click()
         page.locator('.chat-msg.bot').last.get_by_text('虚构服务回复', exact=False).wait_for(timeout=5000)
